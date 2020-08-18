@@ -9,7 +9,7 @@ let output = function (funcXMLHttpRequest, funcConfigure) {
             break
 
         case 'form':
-            funcXMLHttpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;')
+            funcXMLHttpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
             break
 
         case 'formdata':

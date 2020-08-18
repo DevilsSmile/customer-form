@@ -80,12 +80,12 @@
 
             onQueryDetail: function () {
                 console.log('onQueryDetail')
-                this.$router.push('/questionnaireinput')
+                this.$router.push('/questionnairedisplay')
             },
 
             onReset: function () {
                 console.log('onReset')
-                this.$router.push('/questionnairedisplay')
+                this.$router.push('/questionnaireinput')
             },
         }
     }

@@ -5,19 +5,25 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        clientType: 'pc',
-        isSignIn: false,                    // 登录状态
+        clientType: 'phone',
+        isSignIn: true,                    // 登录状态
     },
     
     mutations: {
         clientType: function (state, value) {
             state.clientType = value
         },
+        isSignIn: function (state, value) {
+            state.isSignIn = value
+        },
     },
 
     getters: {
         clientType: function (state) {
             return state.clientType
+        },
+        isSignIn: function (state) {
+            return state.isSignIn
         },
     }
 })

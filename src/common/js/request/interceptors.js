@@ -16,22 +16,22 @@ let output = {
      *  @returns {boolean}
      */
     request: function (funXmlHttpRequest, funcConfigure, funcUrl) {
-        funcUrl = funcUrl.replace(iHost.base, '')
-        // 只有不被过滤的接口才会显示加载动画
-        if (loadingFilter.indexOf(funcUrl) === -1) {
-            if (loading === null) {
-                loading = iVue.$loading({  lock: false, text: 'Loading', spinner: 'el-icon-loading', background: 'rgba(255, 255, 255, 0.7)' })
-            }
+        // funcUrl = funcUrl.replace(iHost.base, '')
+        // // 只有不被过滤的接口才会显示加载动画
+        // if (loadingFilter.indexOf(funcUrl) === -1) {
+        //     if (loading === null) {
+        //         loading = iVue.$loading({  lock: false, text: 'Loading', spinner: 'el-icon-loading', background: 'rgba(255, 255, 255, 0.7)' })
+        //     }
 
-            if (timerClose !== 0) {
-                clearTimeout(timerClose)
-            }
-        }
+        //     if (timerClose !== 0) {
+        //         clearTimeout(timerClose)
+        //     }
+        // }
 
-        // 默认添加 token 属性
-        if (funcConfigure.isToken) {
-            funXmlHttpRequest.setRequestHeader('token', localStorage.getItem('token'))
-        }
+        // // 默认添加 token 属性
+        // if (funcConfigure.isToken) {
+        //     funXmlHttpRequest.setRequestHeader('token', localStorage.getItem('token'))
+        // }
     },
 
     /**
@@ -42,15 +42,15 @@ let output = {
      *  @returns {boolean}
      */
     response: function (funcConfigure, funcResult) {
-        if (loading) {
-            timerClose = setTimeout(() => {
-                if (loading) {
-                    loading.close()
-                }
-                loading = null
-                clearTimeout(timerClose)
-            }, 500)
-        }
+        // if (loading) {
+        //     timerClose = setTimeout(() => {
+        //         if (loading) {
+        //             loading.close()
+        //         }
+        //         loading = null
+        //         clearTimeout(timerClose)
+        //     }, 500)
+        // }
 
         let funcDataType = ''
         try {

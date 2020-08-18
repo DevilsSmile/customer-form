@@ -14,6 +14,105 @@
             </div>
         </div>
 
+        <!-- 登录界面 -->
+        <div class="phone-input-sign-in column con-c align-c" v-if="clientType === 'phone' && winSignIn">
+            <div>
+                <img class="container-header-phone-logo" src="../assets/logo-phone.png" alt="">
+            </div>
+            <div class="form">
+                <el-form ref="formSignIn" key="formSignIn" :model="formSignIn" :rules="ruleSignIn">
+                    <el-form-item class="form-item" prop="oldPassword">
+                        <el-input v-model="formSignIn.phone" maxlength="11" placeholder="手机号">
+                            <i slot="prefix" class="el-icon-mobile-phone"></i>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item class="form-item" prop="newPassword">
+                        <el-input v-model="formSignIn.password" maxlength="18" placeholder="登录密码">
+                            <i slot="prefix" class="el-icon-lock"></i>
+                        </el-input>
+                    </el-form-item>
+                        <el-button class="button-signin" @click.prevent="onSignIn()">登录</el-button>
+                </el-form>
+            </div>
+        </div>
+
+        <!-- 企业信息 -->
+        <div class="phone-input-company-info column con-c align-c" v-if="clientType === 'phone' && winCompanyInfo">
+            <el-form ref="formCompanyInfo" key="formCompanyInfo" :model="formCompanyInfo" :rules="rule">
+                <el-form-item label="企业名称" prop="companyName">
+                    <el-input class="input-text" v-model="formCompanyInfo.companyName" maxlength="11" placeholder="企业名称"></el-input>
+                </el-form-item>
+                <el-form-item label="统一机构代码" prop="companyCode">
+                    <el-input class="input-text" v-model="formCompanyInfo.companyCode" maxlength="18" placeholder="统一机构代码"></el-input>
+                </el-form-item>
+                <el-form-item label="联系人姓名" prop="companyKey">
+                    <el-input class="input-text" v-model="formCompanyInfo.name" maxlength="11" placeholder="联系人姓名"></el-input>
+                </el-form-item>
+                <el-form-item label="联系方式" prop="companyProduct">
+                    <el-input class="input-text" v-model="formCompanyInfo.contact" maxlength="18" placeholder="联系方式"></el-input>
+                </el-form-item>
+                <el-form-item class="column" prop="oldPassword">
+                    <div class="form-item-label row">企业关键技术</div>
+                    <el-input v-model="formCompanyInfo.companyKey" type="textarea" :autosize="{ minRows: 4 }" maxlength="11" placeholder="企业关键技术"></el-input>
+                </el-form-item>
+                <el-form-item prop="newPassword">
+                    <div class="form-item-label row">企业提供产品</div>
+                    <el-input v-model="formCompanyInfo.companyProduct" type="textarea" :autosize="{ minRows: 4 }" maxlength="18" placeholder="企业提供产品"></el-input>
+                </el-form-item>
+                <el-form-item prop="oldPassword">
+                    <div class="form-item-label row">其他</div>
+                    <el-input v-model="formCompanyInfo.other" type="textarea" :autosize="{ minRows: 4 }" maxlength="11" placeholder="其他"></el-input>
+                </el-form-item>
+                <el-form-item prop="newPassword">
+                    <div class="form-item-label row">附件</div>
+                    <el-upload
+                        class="upload-image"
+                        ref="uploadLicense"
+                        list-type="picture-card"
+                        :auto-upload="false"
+                        :limit="1"
+                        :file-list="formCompanyInfo.file"
+                        :action="''"
+                        :on-preview="onUploadPreviewFile"
+                        :on-remove="(file, fileList) => { onUploadRemove('license', file, fileList) }"
+                        :on-change="(file, fileList) => { onUploadChange('license', file, fileList) }"
+                        :on-success="(respons, file, fileList) => { onUploadSuccess('license', respons, file, fileList) }"
+                        :on-error="(error) => { onUploadFail('license', error) }"
+                    >
+                        <i class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                </el-form-item>
+                <div class="operation column con-c align-c">
+                    <el-button class="button-submit" @click.prevent="onSubmit()">保存</el-button>
+                    <el-button class="button-cancel" @click.prevent="winCompanyInfo = false">取消</el-button>
+                </div>
+            </el-form>
+        </div>
+
+        <!-- 修改密码 -->
+        <div class="phone-input-reset-password column con-c align-c" v-if="clientType === 'phone' && winResetPassword">
+            <div class="form">
+                <el-form ref="formSignIn" key="formSignIn" :model="formSignIn" :rules="rule">
+                    <el-form-item class="form-item" prop="oldPassword">
+                        <el-input v-model="formResetPassword.oldPassword" maxlength="11" placeholder="旧密码">
+                            <i slot="prefix" class="el-icon-mobile-phone"></i>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item class="form-item" prop="newPassword">
+                        <el-input v-model="formSignIn.newPassword" maxlength="18" placeholder="新密码">
+                            <i slot="prefix" class="el-icon-lock"></i>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item class="form-item" prop="newPassword">
+                        <el-input v-model="formSignIn.repeatPassword" maxlength="18" placeholder="确认密码">
+                            <i slot="prefix" class="el-icon-lock"></i>
+                        </el-input>
+                    </el-form-item>
+                    <el-button class="button-signin" @click.prevent="onSubmit()">确认修改</el-button>
+                </el-form>
+            </div>
+        </div>
+
         <!-- pc 端页面 -->
         <div class="container-header row con-b align-e" v-if="clientType === 'pc'">
             <div class="logo">
@@ -26,7 +125,7 @@
         </div>
 
         <!-- 登录界面 -->
-        <div class="input-sign-in row con-c align-c" v-if="winSignIn">
+        <div class="input-sign-in row con-c align-c" v-if="clientType === 'pc' && winSignIn">
             <div class="form">
                 <div class="form-title column con-c align-c">
                     <span>登录</span>
@@ -40,14 +139,14 @@
                         <el-input v-model="formSignIn.password" maxlength="18" placeholder="登录密码" prefix-icon="el-icon-lock"></el-input>
                     </el-form-item>
                     <el-form-item class="form-item operation row con-c align-c">
-                        <el-button @click.prevent="onSubmit()">登录</el-button>
+                        <el-button @click.prevent="onSignIn()">登录</el-button>
                     </el-form-item>
                 </el-form>
             </div>
         </div>
 
         <!-- 企业信息 -->
-        <div class="input-company-info row con-c align-c" v-if="winCompanyInfo">
+        <div class="input-company-info row con-c align-c" v-if="clientType === 'pc' && winCompanyInfo">
             <div class="form">
                 <div class="form-title column con-c align-c">
                     <span>企业信息</span>
@@ -110,7 +209,7 @@
         </div>
 
         <!-- 修改密码 -->
-        <div class="input-reset-password row con-c align-c" v-if="winResetPassword">
+        <div class="input-reset-password row con-c align-c" v-if="clientType === 'pc' && winResetPassword">
             <div class="form">
                 <div class="form-title column con-c align-c">
                     <span>修改密码</span>
@@ -136,6 +235,8 @@
 </template>
 
 <script>
+    import iCrypto from 'crypto-js'
+
     import iHost from '@/common/js/host.js'
     import iRequest from '@/common/js/request/request.js'
 
@@ -145,6 +246,9 @@
         data: function () {
             return {
                 clientType: this.$store.state.clientType,
+                isSignIn: this.$store.state.isSignIn,
+
+
                 formSignIn: {
                     phone: '',
                     password: '',
@@ -180,11 +284,26 @@
                         { required: true, message: '重复密码', trigger: 'blur' },
                     ],
                 },
+
+                ruleSignIn: {
+                    phone: [
+                        { required: true, message: '旧密码', trigger: 'blur' },
+                    ],
+                    newPassword: [
+                        { required: true, message: '新密码', trigger: 'blur' },
+                    ],
+                    repeatPassword: [
+                        { required: true, message: '重复密码', trigger: 'blur' },
+                    ],
+                },
             }
         },
 
         created: function () {
             console.log(this.clientType)
+            if (!this.isSignIn) {
+                this.winSignIn = true
+            }
         },
 
         methods: {
@@ -194,6 +313,36 @@
 
             onSubmit: function () {
 
+            },
+
+            onSignIn: function () {
+                let funcParam = JSON.stringify({
+                    'phone': this.formSignIn.phone,
+                    'password': iCrypto.MD5(this.formSignIn.password).toString()
+                })
+                console.log(funcParam)
+
+                let formData = new FormData()
+                formData.append('requestParam', funcParam)
+
+
+                var request = new XMLHttpRequest();
+                request.open("POST", iHost.base + 'f/api/user/userLogin');
+                request.send(formData);
+
+                request.onreadystatechange = function () {
+                    let funStatus = request.status
+                    if ((funStatus >= 200 && funStatus < 300) || funStatus === 304) {
+                        console.log(request.responseText)
+                    }
+                }
+
+                return
+                iRequest.request(iHost.base + 'f/api/user/userLogin', formData, 'formdata', 'post')
+                    .then((funcResponse) => {
+                        console.log(funcResponse)
+                    })
+                    .catch((funcError) => {})
             },
 
             /**
@@ -384,6 +533,187 @@
             .container-header-phone-title {
                 font-size: 4rem;
                 color: #FFFFFF;
+            }
+        }
+
+        .phone-input-sign-in,
+        .phone-input-reset-password {
+            z-index: 1900;
+            position: fixed;
+            top: 15rem;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 15rem);
+            background: url(@backdropPhone);
+            background-repeat: no-repeat;
+            background-size: 100%;
+
+            .container-header-phone-logo {
+                width: 39rem;
+                height: 17rem;
+                margin-top: 7rem;
+            }
+
+            .el-form {
+                margin-top: 7rem;
+
+                .el-form-item {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+
+                    > div {
+                        width: 64rem;
+                        min-height: 8.8rem;
+                        .el-input {
+                            width: 64rem;
+                            height: 8.8rem;
+
+                            input {
+                                flex-grow: 1;
+                                height: 8.8rem;
+                                padding-left: 6rem;
+
+                                font-size: 2.4rem;
+                                font-weight: 400;
+                                color: #9A9A9A;
+                            }
+
+                            span {
+                                display: flex;
+                                flex-direction: row;
+                                align-items: center;
+                                margin-left: 2rem;
+                                i {
+                                    font-size: 3rem;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .button-signin {
+                width: 64rem;
+                height: 8.8rem;
+                margin-top: 7rem;
+                border-radius: 4.4rem;
+                background: linear-gradient(90deg, #0C6CB0, #74BC90);
+
+                font-size: 3rem;
+                color: #FFFFFF;
+            }
+        }
+        
+        .phone-input-company-info {
+            width: 100vw;
+            height: calc(100% - 15rem);
+            overflow: scroll;
+            background: url(@backdropPhone);
+            background-repeat: no-repeat;
+            background-size: 100%;
+
+            .el-form {
+                width: calc(100% - 5rem);
+                height: 200rem;
+                margin: 2.5rem 2.5rem 0 2.5rem;
+                padding: 0 3rem 3rem 3rem;
+                background: #FFFFFF;
+
+                .el-form-item {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 0;
+                    border-bottom: .1rem #EEEEEE solid;
+
+                    > div {
+                        flex-grow: 1;
+                    }
+
+                    label {
+                        position: relative;
+                        width: 21rem;
+                        padding-right: 2.4rem;
+
+                        font-size: 2.8rem;
+                        font-weight: 800;
+                        text-align: right;
+                        color: #000000;
+                    }
+
+                    .form-item-label {
+                        margin: 3rem 0 0 2rem;
+                        font-size: 2.8rem;
+                        font-weight: 800;
+                        text-align: right;
+                        color: #000000;
+                    }
+
+                    .input-text {
+                        flex-grow: 1;
+                        min-height: 8.8rem;
+                        
+                        input {
+                            flex-grow: 1;
+                            height: 8.8rem;
+                            border: none;
+
+                            font-size: 2.4rem;
+                            font-weight: 400;
+                            color: #9A9A9A;
+                        }
+                    }
+
+                    .el-textarea {
+                        display: block;
+                        flex-grow: 1;
+                        min-height: 20rem;
+
+                        textarea {
+                            flex-grow: 1;
+                            min-height: 20rem;
+                            border: none;
+
+                            font-size: 2.4rem;
+                            font-weight: 400;
+                            color: #9A9A9A;
+                        }
+                    }
+
+                    .el-upload {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: center;
+                        align-items: center;
+                        width: 10rem;
+                        height: 10rem;
+                        margin: 3rem 3rem 0 0;
+                        border: .1rem #EEEEEE solid;
+                    }
+                }
+            }
+
+            .button-submit {
+                width: 64rem;
+                height: 8.8rem;
+                margin-top: 6rem;
+                background: linear-gradient(90deg, #F2F2F2 , #CCCCCC);
+                border-radius: 4.4rem;
+
+                font-size: 3rem;
+                color: #ffffff;
+            }
+
+            .button-cancel {
+                width: 64rem;
+                height: 8.8rem;
+                background: linear-gradient(90deg, #76b993 , #1170ab);
+                border-radius: 4.4rem;
+
+                font-size: 3rem;
+                color: #666666;
             }
         }
 

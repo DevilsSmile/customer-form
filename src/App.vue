@@ -23,11 +23,45 @@
 
         },
 
+        mounted: function () {
+            window.onresize = () => {
+                // console.log('window', window.innerWidth)
+                let funcHtml = document.getElementsByTagName('html')[0]
+                let funcWindowWidth = window.innerWidth
+                funcHtml.style.fontSize = '5px'
+
+                if (750 <= funcWindowWidth) {
+                    funcHtml.style.fontSize = '10px'
+                }
+
+                if (650 <= funcWindowWidth && funcWindowWidth < 750) {
+                    funcHtml.style.fontSize = '8px'
+                }
+
+                if (500 <= funcWindowWidth && funcWindowWidth < 650) {
+                    funcHtml.style.fontSize = '6px'
+                }
+
+                if (410 <= funcWindowWidth && funcWindowWidth < 500) {
+                    funcHtml.style.fontSize = '5.4px'
+                }
+                
+                if (funcWindowWidth < 410) {
+                    funcHtml.style.fontSize = '5px'
+                }
+            };
+        },
+
         data: function () {
             return {
 
             }
-        }
+        },
+        
+        created: function () {
+            console.log('app init')
+            // this.$store.commit('clientType', 'phone')
+        },
     }
 </script>
 
