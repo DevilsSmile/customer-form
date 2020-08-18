@@ -1,0 +1,41 @@
+.max-width {
+    width: 1200px;
+    max-width: 1200px;
+}
+
+.overflow-point {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hover-pointer {
+    cursor: pointer;
+}
+
+.hover:hover {
+    color: #ffffff;
+}
+
+.button {
+    width: 160px;
+    height: 52px;
+    margin: 0 40px;
+    border-radius: 26px;
+    border: 1px #ffffff solid;
+    color: #ffffff;
+    background: #ffffff;
+}
+
+.button-disable {
+
+}
+
+.button-disable:focus {
+
+}
+
+.button-disable:hover {
+    color: #ffffff;
+    background: #ffffff;
+}

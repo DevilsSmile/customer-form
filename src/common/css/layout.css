@@ -1,0 +1,43 @@
+/* SAMCSS-layout */
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+.con-s {
+    justify-content: flex-start;
+}
+
+.con-c {
+    justify-content: center;
+}
+
+.con-e {
+    justify-content: flex-end;
+}
+
+.con-b {
+    justify-content: space-between;
+}
+
+.con-a {
+    justify-content: space-around;
+}
+
+.align-s {
+    align-items: flex-start;
+}
+
+.align-c {
+    align-items: center;
+}
+
+.align-e {
+    align-items: flex-end;
+}
