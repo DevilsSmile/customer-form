@@ -7,9 +7,16 @@
 
 <script>
     import iHeader from '@/components/header.vue'
+    import iToken from '@/common/js/token.js'
     export default {
         components: {
             componentHeader: iHeader,
+        },
+
+        data: function () {
+            return {
+
+            }
         },
 
         created: function () {
@@ -20,12 +27,10 @@
                 console.log('pc')
                 this.$store.commit('clientType', 'pc')
             }
-
         },
 
         mounted: function () {
             window.onresize = () => {
-                // console.log('window', window.innerWidth)
                 let funcHtml = document.getElementsByTagName('html')[0]
                 let funcWindowWidth = window.innerWidth
                 funcHtml.style.fontSize = '5px'
@@ -50,17 +55,33 @@
                     funcHtml.style.fontSize = '5px'
                 }
             };
+
+            this.isSignIn()
         },
 
-        data: function () {
-            return {
+        methods: {
+            isSignIn: function () {
+                let funcTokenState = iToken.isSignIn()
+                switch (funcTokenState) {
+                    case 'valid':
 
-            }
-        },
-        
-        created: function () {
-            console.log('app init')
-            // this.$store.commit('clientType', 'phone')
+                        break
+
+                    case 'refresh':
+
+                        break
+
+                    case 'invalid':
+                        this.$store.commit('isSignIn', false)
+                        break
+                }
+
+                // let funcSignInUser = localStorage.getItem('signInUser')
+                // if (funcSignInUser) {
+                //     this.$store.commit('signInUser', JSON.parse(funcSignInUser))
+                //     this.$store.commit('isSignIn', true)
+                // }
+            },
         },
     }
 </script>

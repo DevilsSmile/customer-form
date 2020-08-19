@@ -7,8 +7,8 @@
                     <span class="questionnaire-phone-date">{{'结束时间：' + item.date}}</span>
                 </div>
                 <div class="questionnaire-phone-operation row con-b align-c">
-                    <button class="button-phone-detail" @click="onQueryDetail">问卷详情</button>
-                    <button class="button-phone-reset" @click="onReset">重新填写</button>
+                    <button class="button-phone-detail" @click="onQueryDetail(item)">问卷详情</button>
+                    <button class="button-phone-reset" @click="onReset(item)">重新填写</button>
                 </div>
             </div>
         </div>
@@ -21,8 +21,8 @@
                     <span class="questionnaire-date">{{item.date}}</span>
                 </div>
                 <div class="questionnaire-operation row con-b align-c">
-                    <button class="button-detail" @click="onQueryDetail">问卷详情</button>
-                    <button class="button-reset" @click="onReset">重新填写</button>
+                    <button class="button-detail" @click="onQueryDetail(item)">问卷详情</button>
+                    <button class="button-reset" @click="onReset(item)">重新填写</button>
                 </div>
             </div>
         </div>
@@ -30,12 +30,15 @@
 </template>
 
 <script>
+    import iMiment from 'miment'
+
     import iHost from '@/common/js/host.js'
     import iRequest from '@/common/js/request/request.js'
     export default {
         data: function () {
             return {
                 clientType: this.$store.state.clientType,
+                formCompanyInfo: {},
                 questionnaireList: [],
 
 
@@ -43,49 +46,92 @@
 
 
                 signInEntry: 'signIn',
-                
             }
         },
+
+        computed: {
+            isSignIn: function () {
+                return this.$store.state.isSignIn
+            },
+            signInUser: function () {
+                return this.$store.state.signInUser
+            },
+        },
+
+        watch: {
+            isSignIn: {
+                handler: function (funcNewValue, funcOldValue) {
+                    console.log('home', funcNewValue)
+                    if (!funcNewValue) return
+                    this.queryQuestionnaire()
+                },
+                deep: true,
+                immediate: true,
+            },
+            signInUser: {
+                handler: function (funcNewValue, funcOldValue) {
+                    console.log('signInUser', funcNewValue)
+                    if (!funcNewValue) return
+                    this.formCompanyInfo = funcNewValue
+                    this.queryQuestionnaire()
+                },
+                deep: true,
+                immediate: true,
+            }
+        },
+
         created: function () {
-            this.queryQuestionnaire()
+
         },
         methods: {
+            /**
+             *  查询问卷列表
+             *  @function
+             *  @param
+             *  @returns
+             */
             queryQuestionnaire: function () {
-                let funcRawData = [{
-                    title: '企业员工满意度调查',
-                    date: '2020-08-16',
-                    state: 1
-                },{
-                    title: '员工福利建设',
-                    date: '2020-08-30',
-                    state: 1
-                }]
+                if (!this.isSignIn) return
+                if (JSON.stringify(this.formCompanyInfo) === '{}') return 
 
-                let funcList = []
-                for (let i = 0, l = funcRawData.length; i < l; i++) {
-                    let funcItem = {
-                        title: funcRawData[i].title,
-                        date: funcRawData[i].date,
-                        state: funcRawData[i].state,
-                    }
-                    funcList.push(funcItem)
-                }
-                this.questionnaireList = funcList
-                // iRequest.request(iHost.base + 'bid/zTenderNotice/getApiAllList', funcParam, 'json', 'post')
-                //     .then((funcResponse) => {
+                let funcParam = JSON.stringify({
+                    'userId': this.formCompanyInfo.id
+                })
 
-                //     })
-                //     .catch((funcError) => {})
+                let funcFormData = new FormData()
+                funcFormData.append('requestParam', funcParam)
+                iRequest.request(iHost.base + 'f/api/app/v2/questionnaire/questionnaireList', funcFormData, 'file', 'post')
+                    .then((funcResponse) => {
+                        let funcRawData = funcResponse.list
+
+                        let funcList = []
+                        for (let i = 0, l = funcRawData.length; i < l; i++) {
+                            let funcItem = {
+                                'id': funcRawData[i].questionnaireId,
+                                'dataId': funcRawData[i].dataId,
+                                'formId': funcRawData[i].formId,
+                                'title': funcRawData[i].title,
+                                'date': funcRawData[i].endDate,   
+                                'source': funcRawData[i].source,
+                                // isValid
+                            }
+
+                            iMiment(funcItem.date).stamp() < new Date().getTime() ? funcItem.isValid = true : funcItem.isValid = false
+                            funcList.push(funcItem)
+                        }
+                        this.questionnaireList = funcList
+                    })
+                    .catch((funcError) => {})
             },
 
-            onQueryDetail: function () {
+            onQueryDetail: function (funcItem) {
                 console.log('onQueryDetail')
-                this.$router.push('/questionnairedisplay')
+                this.$router.push('/questionnairedisplay?id=' + funcItem.id + '&formId=' + funcItem.formId + '&dataId=' + funcItem.dataId)
             },
 
-            onReset: function () {
+            onReset: function (funcItem) {
                 console.log('onReset')
-                this.$router.push('/questionnaireinput')
+                this.$router.push('/questionnaireinput?id=' + funcItem.id + '&formId=' + funcItem.formId + '&dataId=' + funcItem.dataId)
             },
         }
     }

@@ -63,7 +63,7 @@ let output = {
 
         if (funcDataType === 'object') {    
             let funcResultData = JSON.parse(funcResult)
-            switch (Number(funcResultData.code)) {
+            switch (Number(funcResultData.statusCode)) {
                 case 10001:
                     console.log('token overdue')
                     this.$store.commit('isSignIn', false)
@@ -74,18 +74,18 @@ let output = {
                     break
 
                 // 请求正常直接返回 data 内容
-                case 200:
-                    return { state: true, response: funcResultData.data}
+                case 1:
+                    return { state: true, response: funcResultData.responseResult}
                     break
 
                 // 请求正常直接返回 data 内容
                 case 400:
-                    return { state: false, response: { message: funcResultData.msg, data: funcResultData.data }}
+                    return { state: false, response: { message: funcResultData.resMessage, data: funcResultData.responseResult }}
                     break
 
                 // 请求异常返回 msg 错误提示
                 default:
-                    return { state: false, response: { message: funcResultData.msg }}
+                    return { state: false, response: { message: funcResultData.resMessage }}
                     break
             }
         }

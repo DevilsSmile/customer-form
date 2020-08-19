@@ -1,6 +1,5 @@
 import iHeader from './header.js'
 import iDataform from './dataform.js'
-import iConfigure from './configure.js'
 import iInterceptors from './interceptors.js'
 import iVue from '../../../main.js'
 
@@ -17,18 +16,19 @@ let output = {
 
     request: function (funcUrl, funcData, funcSendType, funcMethod, funcOther) {
         // 获取默认请求设置
-        let funcConfigure = JSON.parse(JSON.stringify(iConfigure))
+        let funcConfigure = JSON.parse(JSON.stringify({
+            sendType: 'json',                       // 数据发送方式
+            method: 'post',                         // 请求方式
+            timeout: 10000,                         // 超时设置
+            isToken: true,                          // 是否携带
+            errorCode: [ 101 ],
+        }))
+
+        if (funcSendType) funcConfigure.sendType = funcSendType
+        if (funcMethod) funcConfigure.method = funcMethod
+        
         Object.assign(funcConfigure, funcOther)
-
-        // 检查数据发放方式有效性
-        if (funcSendType && iConfigure.sendTypeEnumeration.indexOf(funcSendType.toLowerCase()) >= 0) {
-            funcConfigure.sendType = funcSendType.toLowerCase()
-        }
-
-        // 检查请求方法字段有效性
-        if (funcMethod && iConfigure.methodEnumeration.indexOf(funcMethod) >= 0) {
-            funcConfigure.method = funcMethod
-        }
+        console.log(funcConfigure)
 
 
 
@@ -74,7 +74,6 @@ let output = {
 
         if (funcConfigure.method === 'post') {
             // 设置数据类型
-            funcData = iDataform(funcData, funcConfigure.sendType)
             let funcPromise = new Promise(function (funcResolve, funcReject) {
                 let funcXMLHttpRequest = new XMLHttpRequest()
                 funcXMLHttpRequest.open(funcConfigure.method, funcUrl, true)

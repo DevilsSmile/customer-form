@@ -6,7 +6,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         clientType: 'phone',
-        isSignIn: true,                    // 登录状态
+        isSignIn: false,                    // 登录状态
+        signInUser: {},
     },
     
     mutations: {
@@ -16,6 +17,10 @@ export default new Vuex.Store({
         isSignIn: function (state, value) {
             state.isSignIn = value
         },
+        signInUser: function (state, value) {
+            console.log(value)
+            state.signInUser = value
+        },
     },
 
     getters: {
@@ -24,6 +29,9 @@ export default new Vuex.Store({
         },
         isSignIn: function (state) {
             return state.isSignIn
+        },
+        signInUser: function (state) {
+            return state.signInUser
         },
     }
 })

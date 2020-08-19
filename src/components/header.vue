@@ -4,18 +4,20 @@
         <!-- phond 端页面 -->
         <div v-if="clientType === 'phone'" class="container-header-phone">
             <div class="row con-b">
-                <div>
+                <div @click="winCompanyInfo = true">
                     <img class="container-header-phone-avatar" src="../assets/avatar.png" alt="">
                 </div>
                 <div>
                     <span class="container-header-phone-title">问卷列表</span>
                 </div>
-                <div></div>
+                <div @click="onHome()">
+                    <span>主页</span>
+                </div>
             </div>
         </div>
 
         <!-- 登录界面 -->
-        <div class="phone-input-sign-in column con-c align-c" v-if="clientType === 'phone' && winSignIn">
+        <div class="phone-input-sign-in column con-c align-c" v-if="clientType === 'phone' && winSignIn" @click.self="onCloseDialog">
             <div>
                 <img class="container-header-phone-logo" src="../assets/logo-phone.png" alt="">
             </div>
@@ -37,7 +39,7 @@
         </div>
 
         <!-- 企业信息 -->
-        <div class="phone-input-company-info column con-c align-c" v-if="clientType === 'phone' && winCompanyInfo">
+        <div class="phone-input-company-info column con-c align-c" v-if="clientType === 'phone' && winCompanyInfo" @click.self="onCloseDialog()">
             <el-form ref="formCompanyInfo" key="formCompanyInfo" :model="formCompanyInfo" :rules="rule">
                 <el-form-item label="企业名称" prop="companyName">
                     <el-input class="input-text" v-model="formCompanyInfo.companyName" maxlength="11" placeholder="企业名称"></el-input>
@@ -66,33 +68,33 @@
                 <el-form-item prop="newPassword">
                     <div class="form-item-label row">附件</div>
                     <el-upload
-                        class="upload-image"
-                        ref="uploadLicense"
+                        class="upload-image row"
+                        ref="uploadImage"
                         list-type="picture-card"
                         :auto-upload="false"
-                        :limit="1"
-                        :file-list="formCompanyInfo.file"
+                        :limit="3"
                         :action="''"
+                        :file-list="formCompanyInfo.file"
                         :on-preview="onUploadPreviewFile"
-                        :on-remove="(file, fileList) => { onUploadRemove('license', file, fileList) }"
-                        :on-change="(file, fileList) => { onUploadChange('license', file, fileList) }"
-                        :on-success="(respons, file, fileList) => { onUploadSuccess('license', respons, file, fileList) }"
-                        :on-error="(error) => { onUploadFail('license', error) }"
+                        :on-remove="(file, fileList) => { onUploadRemove(file, fileList) }"
+                        :on-change="(file, fileList) => { onUploadChange(file, fileList) }"
+                        :on-success="(respons, file, fileList) => { onUploadSuccess(respons, file, fileList) }"
+                        :on-error="(error) => { onUploadFail(error) }"
                     >
                         <i class="el-icon-plus avatar-uploader-icon"></i>
                     </el-upload>
                 </el-form-item>
                 <div class="operation column con-c align-c">
-                    <el-button class="button-submit" @click.prevent="onSubmit()">保存</el-button>
+                    <el-button class="button-submit" @click.prevent="onCompany()">保存</el-button>
                     <el-button class="button-cancel" @click.prevent="winCompanyInfo = false">取消</el-button>
                 </div>
             </el-form>
         </div>
 
         <!-- 修改密码 -->
-        <div class="phone-input-reset-password column con-c align-c" v-if="clientType === 'phone' && winResetPassword">
+        <div class="phone-input-reset-password column con-c align-c" v-if="clientType === 'phone' && winResetPassword" @click.self="onCloseDialog()">
             <div class="form">
-                <el-form ref="formSignIn" key="formSignIn" :model="formSignIn" :rules="rule">
+                <el-form ref="formSignIn" key="formSignIn" :model="formSignIn" :rules="ruleResetPassword">
                     <el-form-item class="form-item" prop="oldPassword">
                         <el-input v-model="formResetPassword.oldPassword" maxlength="11" placeholder="旧密码">
                             <i slot="prefix" class="el-icon-mobile-phone"></i>
@@ -108,7 +110,7 @@
                             <i slot="prefix" class="el-icon-lock"></i>
                         </el-input>
                     </el-form-item>
-                    <el-button class="button-signin" @click.prevent="onSubmit()">确认修改</el-button>
+                    <el-button class="button-signin" @click.prevent="onResetPassword()">确认修改</el-button>
                 </el-form>
             </div>
         </div>
@@ -119,8 +121,8 @@
                 <img src="../assets/logo.png" alt="">
             </div>
             <div class="user row con-c align-c">
-                <img src="../assets/avatar.png" alt="">
-                <span @click="onResetPassword">修改密码</span>
+                <img src="../assets/avatar.png" alt="" @click="winCompanyInfo = true">
+                <span @click="winResetPassword = true">修改密码</span>
             </div>
         </div>
 
@@ -132,10 +134,10 @@
                     <div class="form-title-decorate"></div>
                 </div>
                 <el-form ref="formSignIn" key="formSignIn" :model="formSignIn" :rules="rule">
-                    <el-form-item class="form-item" prop="oldPassword">
+                    <el-form-item class="form-item" prop="phone">
                         <el-input v-model="formSignIn.phone" maxlength="11" placeholder="手机号" prefix-icon="el-icon-mobile-phone"></el-input>
                     </el-form-item>
-                    <el-form-item class="form-item" prop="newPassword">
+                    <el-form-item class="form-item" prop="password">
                         <el-input v-model="formSignIn.password" maxlength="18" placeholder="登录密码" prefix-icon="el-icon-lock"></el-input>
                     </el-form-item>
                     <el-form-item class="form-item operation row con-c align-c">
@@ -146,7 +148,7 @@
         </div>
 
         <!-- 企业信息 -->
-        <div class="input-company-info row con-c align-c" v-if="clientType === 'pc' && winCompanyInfo">
+        <div class="input-company-info row con-c align-c" v-if="clientType === 'pc' && winCompanyInfo" @click.self="onCloseDialog()">
             <div class="form">
                 <div class="form-title column con-c align-c">
                     <span>企业信息</span>
@@ -162,39 +164,39 @@
                         </el-form-item>
                     </div>
                     <div class="row con-b align-c">
-                        <el-form-item class="form-item" label="联系人姓名：" prop="companyKey">
+                        <el-form-item class="form-item" label="联系人姓名：" prop="name">
                             <el-input v-model="formCompanyInfo.name" maxlength="11" placeholder="联系人姓名"></el-input>
                         </el-form-item>
-                        <el-form-item class="form-item" label="联系方式：" prop="companyProduct">
+                        <el-form-item class="form-item" label="联系方式：" prop="contact">
                             <el-input v-model="formCompanyInfo.contact" maxlength="18" placeholder="联系方式"></el-input>
                         </el-form-item>
                     </div>
                     <div class="row con-b align-c">
-                        <el-form-item class="form-item" label="企业关键技术：" prop="oldPassword">
+                        <el-form-item class="form-item" label="企业关键技术：" prop="companyKey">
                             <el-input v-model="formCompanyInfo.companyKey" type="textarea" :autosize="{ minRows: 4 }" maxlength="11" placeholder="企业关键技术"></el-input>
                         </el-form-item>
-                        <el-form-item class="form-item" label="企业提供产品：" prop="newPassword">
+                        <el-form-item class="form-item" label="企业提供产品：" prop="companyProduct">
                             <el-input v-model="formCompanyInfo.companyProduct" type="textarea" :autosize="{ minRows: 4 }" maxlength="18" placeholder="企业提供产品"></el-input>
                         </el-form-item>
                     </div>
                     <div class="row con-b">
-                        <el-form-item class="form-item" label="其他：" prop="oldPassword">
+                        <el-form-item class="form-item" label="其他：">
                             <el-input v-model="formCompanyInfo.other" type="textarea" :autosize="{ minRows: 4 }" maxlength="11" placeholder="其他"></el-input>
                         </el-form-item>
-                        <el-form-item class="form-item" label="附件：" prop="newPassword">
+                        <el-form-item class="form-item" label="附件：">
                             <el-upload
-                                class="upload-image"
-                                ref="uploadLicense"
+                                class="upload-image row"
+                                ref="uploadImage"
                                 list-type="picture-card"
                                 :auto-upload="false"
-                                :limit="1"
-                                :file-list="formCompanyInfo.file"
+                                :limit="3"
                                 :action="''"
+                                :file-list="formCompanyInfo.file"
                                 :on-preview="onUploadPreviewFile"
-                                :on-remove="(file, fileList) => { onUploadRemove('license', file, fileList) }"
-                                :on-change="(file, fileList) => { onUploadChange('license', file, fileList) }"
-                                :on-success="(respons, file, fileList) => { onUploadSuccess('license', respons, file, fileList) }"
-                                :on-error="(error) => { onUploadFail('license', error) }"
+                                :on-remove="(file, fileList) => { onUploadRemove(file, fileList) }"
+                                :on-change="(file, fileList) => { onUploadChange(file, fileList) }"
+                                :on-success="(respons, file, fileList) => { onUploadSuccess(respons, file, fileList) }"
+                                :on-error="(error) => { onUploadFail(error) }"
                             >
                                 <i class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
@@ -202,20 +204,20 @@
                     </div>
                     <div class="operation row con-c align-c">
                         <el-button class="button-cancel" @click.prevent="winCompanyInfo = false">取消</el-button>
-                        <el-button class="button-submit" @click.prevent="onSubmit()">保存</el-button>
+                        <el-button class="button-submit" @click.prevent="onCompany()">保存</el-button>
                     </div>
                 </el-form>
             </div>
         </div>
 
         <!-- 修改密码 -->
-        <div class="input-reset-password row con-c align-c" v-if="clientType === 'pc' && winResetPassword">
+        <div class="input-reset-password row con-c align-c" v-if="clientType === 'pc' && winResetPassword" @click.self="onCloseDialog()">
             <div class="form">
                 <div class="form-title column con-c align-c">
-                    <span>修改密码</span>
+                    <span @click="winResetPassword = true">修改密码</span>
                     <div class="form-title-decorate"></div>
                 </div>
-                <el-form ref="formResetPassword" key="formResetPassword" :model="formResetPassword" :rules="rule">
+                <el-form ref="formResetPassword" key="formResetPassword" :model="formResetPassword" :rules="ruleResetPassword">
                     <el-form-item class="form-item" prop="oldPassword">
                         <el-input v-model="formResetPassword.oldPassword" maxlength="30" placeholder="旧密码"></el-input>
                     </el-form-item>
@@ -226,7 +228,7 @@
                         <el-input v-model="formResetPassword.repeatPassword" maxlength="18" placeholder="确认新密码"></el-input>
                     </el-form-item>
                     <el-form-item class="form-item operation row con-c align-c">
-                        <el-button @click.prevent="onSubmit()">确认修改</el-button>
+                        <el-button @click.prevent="onResetPassword()">确认修改</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -245,15 +247,15 @@
     export default {
         data: function () {
             return {
+                host: iHost.base,
                 clientType: this.$store.state.clientType,
-                isSignIn: this.$store.state.isSignIn,
-
 
                 formSignIn: {
                     phone: '',
                     password: '',
                 },
                 formCompanyInfo: {
+                    id: '',
                     companyName: '',
                     companyCode: '',
                     companyKey: '',
@@ -268,6 +270,12 @@
                     newPassword: '',
                     repeatPassword: '',
                 },
+
+                // 动态表单相关参数
+                uploadindKey: '',
+                uploadKeyList: [],
+                uploadFile: [],
+                uploadFileUrl: [],
 
                 winSignIn: false,
                 winCompanyInfo: false,
@@ -287,91 +295,229 @@
 
                 ruleSignIn: {
                     phone: [
-                        { required: true, message: '旧密码', trigger: 'blur' },
+                        { required: true, message: '手机号码不能为空', trigger: 'blur' },
                     ],
-                    newPassword: [
-                        { required: true, message: '新密码', trigger: 'blur' },
-                    ],
-                    repeatPassword: [
-                        { required: true, message: '重复密码', trigger: 'blur' },
+                    password: [
+                        { required: true, message: '密码不能为空', trigger: 'blur' },
                     ],
                 },
+
+                ruleResetPassword: {
+                    oldPassword: [
+                        { required: true, message: '旧密码不能为空', trigger: 'blur' },
+                    ],
+                    newPassword: [
+                        { required: true, message: '新密码不能为空', trigger: 'blur' },
+                    ],
+                    repeatPassword: [
+                        { required: true, message: '两次密码不一致', trigger: 'blur' },
+                    ],
+                },
+
+                ruleCompanyInfo: {
+                    companyName: [
+                        { required: true, message: '企业名称不能为空', trigger: 'blur' },
+                    ],
+                    companyCode: [
+                        { required: true, message: '统一机构代码不能为空', trigger: 'blur' },
+                    ],
+                    companyKey: [
+                        { required: true, message: '企业关键技术不能为空', trigger: 'blur' },
+                    ],
+                    companyProduct: [
+                        { required: true, message: '企业提供产品不能为空', trigger: 'blur' },
+                    ],
+                    name: [
+                        { required: true, message: '联系人姓名不能为空', trigger: 'blur' },
+                    ],
+                    contact: [
+                        { required: true, message: '联系方式不能为空', trigger: 'blur' },
+                    ],
+                }
             }
         },
 
+        computed: {
+            isSignIn: function () {
+                return this.$store.state.isSignIn
+            },
+        },
+
+        watch: {
+            isSignIn: {
+                handler: function (funcNewValue, funcOldValue) {
+                    console.log('home', funcNewValue)
+                    if (!funcNewValue) return
+                    this.winSignIn = false
+                },
+                deep: true,
+                immediate: true,
+            },
+        },
+
         created: function () {
-            console.log(this.clientType)
             if (!this.isSignIn) {
+                this.$router.push('/')
                 this.winSignIn = true
+            } else {
+                this.formCompanyInfo = JSON.parse(localStorage.getItem('signInUser'))
+                console.log('signin', this.formCompanyInfo)
             }
         },
 
         methods: {
+            onHome: function () {
+                this.$router.push('/')
+            },
+            /**
+             *  重置密码
+             *  @function
+             *  @param
+             *  @returns
+             */
             onResetPassword: function () {
-                this.winResetPassword = true
+                this.$refs['formResetPassword'].validate((pass) => {
+                    if (pass) {
+                        let funcParam = JSON.stringify({
+                            'userId': this.formCompanyInfo.id,
+                            'oldPassword': iCrypto.MD5(this.formResetPassword.oldPassword).toString(),
+                            'newPassword': iCrypto.MD5(this.formResetPassword.newPassword).toString()
+                        })
+
+                        let funcFormData = new FormData()
+                        funcFormData.append('requestParam', funcParam)
+                        iRequest.request(iHost.base + 'f/api/user/pwdModify', funcFormData, 'file', 'post')
+                            .then((funcResponse) => {
+
+                            })
+                            .catch((funcError) => {})
+                    }
+                })
             },
 
-            onSubmit: function () {
+            onCompany: function () {
+                this.$refs['formCompanyInfo'].validate((pass) => {
+                    if (pass) {
+                        // 判断图片是否上传
+                        for (let i = 0, l = this.formCompanyInfo.file.length; i < l; i++) {
+                            if (this.formCompanyInfo.file[i].status === 'ready') {
+                                let funcImageFile = this.formCompanyInfo.file[i].raw
+                                let funcFormData = new FormData()
+                                funcFormData.append('file', funcImageFile)
+                                let funcAxios = iRequest.request(iHost.base + 'f/api/app/v2/getUrl', funcFormData, 'file', 'post')
+                                                    .then((response) => {
+                                                        console.log(response)
+                                                        // this.uploadFileUrl.push(response.data.fileId)
+                                                    })
+                                this.uploadFile.push(funcAxios)
+                            }
+                        }
 
+                        if (this.uploadFile.length > 0) {
+                            Promise.all(this.uploadFile)
+                                .then(() => {
+                                    for (let i = 0, l = this.uploadFileUrl.length; i < l; i++) {
+                                        if (this.formCompanyInfo.file[i].status === 'ready') {
+                                            this.formCompanyInfo.file[i].uploadUrl = this.uploadFileUrl[i]
+                                            this.formCompanyInfo.file[i].status = 'success'
+                                        }
+                                    }
+                                    this.saveCompany()
+                                })
+                                .catch(() => {
+                                    console.log('uploadAllImage catch')
+                                })
+                            return
+                        }
+                    }
+                })
+            },
+
+            saveCompany: function () {
+                let funcUploadUrl = []
+                let funcUploadImage = this.formCompanyInfo.file
+                for (let i = 0, l = funcUploadImage.length; i < l; i++) {
+                    funcUploadUrl.push(funcUploadImage[i].uploadUrl)
+                }
+
+                let funcParam = JSON.stringify({
+                    'userId': this.formCompanyInfo.id,
+                    'name': this.formCompanyInfo.companyName,
+                    'code': this.formCompanyInfo.companyCode,
+                    'contacts': this.formCompanyInfo.name,
+                    'phone': this.formCompanyInfo.contact,
+                    'technology': this.formCompanyInfo.companyKey,
+                    'product': this.formCompanyInfo.companyProduct,
+                    'others': this.formCompanyInfo.other,
+                    'userFiles': funcUploadUrl.join('|'),
+                })
+
+                console.log(JSON.stringify(funcParam))
+
+                let funcFormData = new FormData()
+                funcFormData.append('requestParam', funcParam)
+                iRequest.request(iHost.base + 'f/api/user/userUpdate', funcFormData, 'file', 'post')
+                    .then((funcResponse) => {
+
+                    })
+                    .catch((funcError) => {})
             },
 
             onSignIn: function () {
-                let funcParam = JSON.stringify({
-                    'phone': this.formSignIn.phone,
-                    'password': iCrypto.MD5(this.formSignIn.password).toString()
-                })
-                console.log(funcParam)
+                this.$refs['formSignIn'].validate((pass) => {
+                    if (pass) {
+                        let funcParam = JSON.stringify({
+                            'phone': this.formSignIn.phone,
+                            'password': iCrypto.MD5(this.formSignIn.password).toString()
+                        })
 
-                let formData = new FormData()
-                formData.append('requestParam', funcParam)
+                        let funcFormData = new FormData()
+                        funcFormData.append('requestParam', funcParam)
+                        iRequest.request(iHost.base + 'f/api/user/userLogin', funcFormData, 'file', 'post')
+                            .then((funcResponse) => {
+                                this.formCompanyInfo = {
+                                    id: funcResponse.userId,
+                                    companyName: funcResponse.name,
+                                    companyCode: funcResponse.code,
+                                    companyKey: funcResponse.technology,
+                                    companyProduct: funcResponse.product,
+                                    name: funcResponse.name,
+                                    contact: funcResponse.contacts,
+                                    other: funcResponse.others,
+                                    file: funcResponse.fileList,
+                                },
 
+                                this.$store.commit('signInUser', this.formCompanyInfo)
+                                this.$store.commit('isSignIn', true)
+                                this.winSignIn = false
 
-                var request = new XMLHttpRequest();
-                request.open("POST", iHost.base + 'f/api/user/userLogin');
-                request.send(formData);
-
-                request.onreadystatechange = function () {
-                    let funStatus = request.status
-                    if ((funStatus >= 200 && funStatus < 300) || funStatus === 304) {
-                        console.log(request.responseText)
+                                // 测试数据
+                                localStorage.setItem('signInUser', JSON.stringify(this.formCompanyInfo))
+                            })
+                            .catch((funcError) => {})
                     }
-                }
+                })
+            },
 
-                return
-                iRequest.request(iHost.base + 'f/api/user/userLogin', formData, 'formdata', 'post')
-                    .then((funcResponse) => {
-                        console.log(funcResponse)
-                    })
-                    .catch((funcError) => {})
+            onCloseDialog: function () {
+                this.winCompanyInfo = false
+                this.winResetPassword = false
             },
 
             /**
              *  上传组件 - 文件格式
              *  @function
-             *  @param {string} funcType
              *  @param {object} funcFile
              *  @returns
              */
-            checkFileFormat: function (funcType, funcFile) {
-                switch (funcType) {
-                    case 'license':
-                        if (funcFile.raw.type !== 'image/png' && funcFile.raw.type !== 'image/jpeg') {
-                            this.$message.error('图片仅支持JPG、PNG格式')
-                            return false
-                        }
-                        if (funcFile.size >= 6291456) {
-                            this.$message.error('文件大小不超过5MB')
-                            return false
-                        }
-                        break
-
-                    case 'quote':
-                        console.log('quote', funcFile)
-                        if (funcFile.size >= 6291456) {
-                            this.$message.error('文件大小不超过5MB')
-                            return false
-                        }
-                        break
+            checkFileFormat: function (funcFile) {
+                if (funcFile.raw.type !== 'image/png' && funcFile.raw.type !== 'image/jpeg') {
+                    this.$message.error('图片仅支持JPG、PNG格式')
+                    return false
+                }
+                if (funcFile.size >= 6291456) {
+                    this.$message.error('文件大小不超过5MB')
+                    return false
                 }
                 return true
             },
@@ -379,65 +525,54 @@
             /**
              *  上传组件 - 文件状态
              *  @function
-             *  @param {string} funcType
              *  @param {object} funcFile
              *  @param {array } funcFileList
              *  @returns
              */
-            onUploadChange: function (funcType, funcFile, funcFileList) {
+            onUploadChange: function (funcFile, funcFileList) {
                 if (funcFile.status === 'ready') {
-                    if (this.checkFileFormat(funcType, funcFile)) {
+                    if (this.checkFileFormat(funcFile)) {
                         // 重新定义上传文件名称
                         let funcFileFormat = funcFile.name.substring(funcFile.name.lastIndexOf('.'), funcFile.name.length)
-                        let funcFileName = funcType + (new Date() - 0) + funcFileFormat
+                        let funcFileName = (new Date() - 0) + funcFileFormat
                         let funcCopyFile = new File([funcFile.raw], funcFileName, { type: funcFile.raw.type})
                         funcCopyFile.uid = funcFile.raw.uid
                         funcFile.raw = funcCopyFile
                         funcFile.name = funcFileName
                         
-                        this.formRegister[funcType + 'Image'] = 'image'
-                        this.uploadOption[funcType].image.push(funcFile)
+                        this.formCompanyInfo.file.push(funcFile)
                     } else {
-                        let funcImageBuffer = JSON.stringify(this.uploadOption[funcType].image)
-                        this.uploadOption[funcType].image = []
-                        this.uploadOption[funcType].image = JSON.parse(funcImageBuffer)
+                        let funcImageBuffer = JSON.stringify(this.formCompanyInfo.file)
+                        this.formCompanyInfo.file = []
+                        this.formCompanyInfo.file = JSON.parse(funcImageBuffer)
                     }
                 }
 
                 if (funcFile.status === 'success') {
-                    for (let i = 0, len = this.uploadOption[funcType].image.length; i < len; i++) {
-                        if (this.uploadOption[funcType].image[i].status === 'ready') {
+                    for (let i = 0, len = this.formCompanyInfo.file.length; i < len; i++) {
+                        if (this.formCompanyInfo.file[i].status === 'ready') {
                             return
                         }
                     }
-
-                    this.onNext()
                 }
             },
 
             /**
              *  上传组件 - 文件删除
              *  @function
-             *  @param {string} funcType
              *  @param {object} funcFile
              *  @param {array } funcFileList
              *  @returns
              */
-            onUploadRemove: function (funcType, funcFile, funcFileList) {
+            onUploadRemove: function (funcFile, funcFileList) {
                 // 判断当前文件列表是否存在删除图片
                 // 找到列表中的文件进行删除
-                let funcImageList = this.uploadOption[funcType].image
+                let funcImageList = this.formCompanyInfo.file
                 for (let i = 0, len = funcImageList.length; i < len; i++) {
                     if (funcImageList[i] && funcImageList[i].uid === funcFile.uid) {
                         funcImageList.splice(i, 1)
                         break
                     }
-                }
-
-                // 删除文件逻辑
-                // 如果当前文件列表为空则不通过校验
-                if (funcImageList.length === 0) {
-                    this.formRegister[funcType + 'Image'] = ''
                 }
             },
 
@@ -453,41 +588,16 @@
             },
 
             /**
-             *  上传组件 - 文件下载
-             *  @function
-             *  @param {object} funcFile
-             *  @returns
-             */
-            onUploadDownloadFile: function (funcFile) {
-                let funcReader = new FileReader()
-                funcReader.readAsArrayBuffer(funcFile.raw)
-                funcReader.onload = function(funcEvent){
-                    let funcBlob = new Blob([funcEvent.target.result], { type : funcFile.raw.type })
-
-                    if (window.navigator.msSaveBlob) {
-                        window.navigator.msSaveBlob(funcBlob, funcFile.raw.name)
-                    } else {
-                        let funcDownloadLink = document.createElement('a')
-                        funcDownloadLink.download = funcFile.raw.name
-                        funcDownloadLink.href = URL.createObjectURL(funcBlob)
-                        document.body.appendChild(funcDownloadLink)
-                        funcDownloadLink.click()
-                        document.body.removeChild(funcDownloadLink)
-                    }
-                }
-            },
-
-            /**
              *  上传组件 - 上传成功
              *  @function
              *  @param {string} funcType
              *  @param {object} funcResponse
              *  @returns
              */
-            onUploadSuccess: function (funcType, funcResponse, funcFile, funcFileList) {
+            onUploadSuccess: function (funcResponse, funcFile, funcFileList) {
                 // 文件上传成功之后替换文件临时路径
                 if (funcResponse.code === 200) {
-                    let funcImageList = this.uploadOption[funcType].image
+                    let funcImageList = this.formCompanyInfo.file
                     for (let i = 0, len = funcImageList.length; i < len; i++) {
                         if (funcImageList[i] && funcImageList[i].uid === funcFile.uid) {
                             funcImageList[i].url = iHost.resources + funcResponse.data.url
@@ -495,20 +605,17 @@
                         }
                     }
 
-                    this.uploadOption[funcType].image = funcImageList
+                    this.formCompanyInfo.file = funcImageList
                 }
-
-                console.log(this.uploadOption[funcType].image)
             },
 
             /**
              *  上传组件 - 上传失败
              *  @function
-             *  @param {string} funcType
              *  @param {object} funcError
              *  @returns
              */
-            onUploadFail: function (funcType, funcError) {
+            onUploadFail: function (funcError) {
 
             },
         }
@@ -870,6 +977,13 @@
                     align-items: center;
                     width: 80px;
                     height: 80px;
+                }
+
+                .el-upload-list {
+                    li {
+                        width: 80px;
+                        height: 80px;
+                    }
                 }
             }
         }

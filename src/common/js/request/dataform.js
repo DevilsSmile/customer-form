@@ -17,14 +17,6 @@ let output = function (funcParams, funcType) {
         case 'json':
             return JSON.stringify(funcParams)
             break
-
-        case 'formdata':
-            let funcFormData = new FormData()
-            Object.keys(funcParams).forEach((funcKey) => {
-                funcFormData.append(funcKey, funcParams[funcKey])
-            })
-            return funcFormData
-            break
     }
 }
 

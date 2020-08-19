@@ -172,8 +172,16 @@
         data: function () {
             return {
                 clientType: this.$store.state.clientType,
+                formId: '',
                 formDesign: {},
-                widgetList: [{"type":"input","name":"意见","group":0,"key":1597048729690,"model":"input_1597048729690","options":{"width":"100%","value":"","defaultValue":"哈哈哈哈哈哈","placeholder":"","maxlength":20,"required":true}},{"type":"textarea","name":"建议","group":0,"key":1597048730225,"model":"textarea_1597048730225","options":{"width":"100%","value":"","defaultValue":"","placeholder":"","maxlength":"50","required":false}},{"type":"number","name":"每天步行公里数","group":0,"key":1597048730748,"model":"number_1597048730748","options":{"width":"100%","value":0,"min":0,"max":7,"required":false}},{"type":"radio","name":"测试一下单选","group":1,"key":1597048731257,"model":"radio_1597048731257","radioActive":0,"options":{"width":"100%","selectValue":"","options":[{"label":"1","value":1597048711766},{"label":"12","value":1597048711767},{"label":"33","value":1597048711768}],"required":true}},{"type":"checkbox","name":"测试二多选","group":1,"key":1597048731673,"model":"checkbox_1597048731673","options":{"width":"100%","selectValue":[],"options":[{"label":"A、哈哈","value":1597048711766},{"label":"B、呵呵","value":1597048711767},{"label":"C、呵呵和","value":1597048711768},{"label":"D、哈哈哈哈哈","value":1597048865091}],"required":true}},{"type":"select","name":"出行","group":1,"key":1597048732097,"model":"select_1597048732097","options":{"width":"100%","value":"","selectValue":"","options":[{"label":"1111","value":1597048711766},{"label":"吃的才舒服","value":1597048711767},{"label":"切尔奇若","value":1597048711768}],"required":false}},{"type":"imgupload","name":"美图","group":2,"key":1597048732775,"model":"imgupload_1597048732775","options":{"width":"100%","placeholder":"","limit":3,"size":"5000","required":true}},{"type":"input","name":"单行文本","group":0,"key":1597048736330,"model":"input_1597048736330","options":{"width":"100%","value":"","defaultValue":"","placeholder":"","maxlength":"25","required":false}},{"type":"textarea","name":"多行文本122222","group":0,"key":1597048737529,"model":"textarea_1597048737529","options":{"width":"100%","value":"","defaultValue":"","placeholder":"","maxlength":"50","required":false}},{"type":"radio","name":"单选框组","group":1,"key":1597048739784,"model":"radio_1597048739784","radioActive":0,"options":{"width":"100%","selectValue":"","options":[{"label":"1111","value":1597048711766},{"label":"222222","value":1597048711767},{"label":"33333","value":1597048711768}],"required":false}},{"type":"radio","name":"单选框组","group":1,"key":1597048740718,"model":"radio_1597048740718","radioActive":0,"options":{"width":"100%","selectValue":"","options":[{"label":"A","value":1597048711766},{"label":"B","value":1597048711767},{"label":"C","value":1597048711768},{"label":"D","value":1597048949196},{"label":"E","value":1597048952163},{"label":"F","value":1597048954723},{"label":"G","value":1597049079962}],"required":true}},{"type":"checkbox","name":"喜欢食物","group":1,"key":1597048743053,"model":"checkbox_1597048743053","options":{"width":"100%","selectValue":[],"options":[{"label":"牛奶","value":1597048711766},{"label":"西瓜","value":1597048711767},{"label":"橘子","value":1597048711768},{"label":"苹果","value":1597048962531},{"label":"西红柿","value":1597048985757},{"label":"牛排","value":1597048990541},{"label":"烤鸡","value":1597048991502}],"required":true}}],
+                widgetList: [],
+
+                // 动态表单相关参数
+                uploadindKey: '',
+                uploadKeyList: [],
+                uploadFile: [],
+                uploadFileUrl: [],
+
                 formDetail: {
                     title: '企业员工满意度调查',
                 },
@@ -200,7 +208,11 @@
             }
         },
         created: function () {
-            this.queryForm()
+            if (this.$route.query.formId) {
+                this.queryForm()
+            } else {
+                this.$router.push('/')
+            }
         },
         methods: {
             /**
@@ -210,12 +222,14 @@
              *  @returns
              */
             queryForm: function (funcQueryId) {
-                // let funcParam = {
-                //     'id': funcQueryId
-                // }
-                // axiosPostApp(host().server + '/f/api/app/v2/questionnaire/queryById', funcParam)
-                //     .then((response) => {
-                        // this.widgetList = JSON.parse(response.data.source).list
+                let funcParam = JSON.stringify({
+                    'id': this.$route.query.formId
+                })
+                let funcFormData = new FormData()
+                funcFormData.append('requestParam', funcParam)
+                iRequest.request(iHost.base + 'f/api/app/v2/questionnaire/queryById', funcFormData, 'file', 'post')
+                    .then((response) => {
+                        this.widgetList = JSON.parse(response.source).list
                         for (let i = 0, l = this.widgetList.length; i < l; i++) {
                             switch (this.widgetList[i].type) {
                                 case 'input':
@@ -247,11 +261,176 @@
                                     break
                             }
                         }
-                    // })
+
+                        console.log('this.formDesign', this.formDesign)
+                    })
             },
 
             onSubmit: function () {
-                console.log('onSubmit')
+                this.$refs['formUser'].validate((pass) => {
+                    if (pass) {
+                        // let funcParam = JSON.stringify({
+                        //     'userId': this.formCompanyInfo.id,
+                        //     'oldPassword': iCrypto.MD5(this.formResetPassword.oldPassword).toString(),
+                        //     'newPassword': iCrypto.MD5(this.formResetPassword.newPassword).toString()
+                        // })
+
+                        // let funcFormData = new FormData()
+                        // funcFormData.append('requestParam', funcParam)
+                        // iRequest.request(iHost.base + 'f/api/user/pwdModify', funcFormData, 'file', 'post')
+                        //     .then((funcResponse) => {
+
+                        //     })
+                        //     .catch((funcError) => {})
+
+                        // 校验动态表单必填项目
+                        for (let i = 0, l = this.widgetList.length; i < l; i++) {
+                            if (this.widgetList[i].options.required) {
+                                switch (this.widgetList[i].type) {
+                                    case 'input':
+                                    case 'textarea':
+                                    case 'radio':
+                                    case 'select':
+                                        if (!this.formDesign[this.widgetList[i].model] && this.formDesign[this.widgetList[i].model] !== 0) {
+                                            // this.showToast('您有必填的题目未填写，请填写完整再提交')
+                                            return
+                                        }
+                                        break
+
+                                    case 'number':
+                                        
+                                        break
+
+                                    case 'checkbox':
+                                    case 'imgupload':
+                                        if (this.formDesign[this.widgetList[i].model].length === 0) {
+                                            // this.showToast('您有必填的题目未填写，请填写完整再提交')
+                                            return
+                                        }
+                                        break
+                                }
+                            }
+                        }
+                        this.onReadyUploadImage()
+                    }
+                })
+            },
+
+            onReadyUploadImage: function () {
+                let funcFormKey = Object.keys(this.formDesign)
+
+                // 记录所有包含图片的属性字段
+                for (let i = 0, l = funcFormKey.length; i < l; i++) {
+                    if (this.formDesign[funcFormKey[i]].length && this.formDesign[funcFormKey[i]][0].status) {
+                        this.uploadKeyList.push(funcFormKey[i])
+                    }
+                }
+                this.uploadAllImage()
+            },
+
+            uploadAllImage: function () {
+                key: for (let i = 0, l = this.uploadKeyList.length; i < l; i++) {
+                    this.uploadindKey = ''
+                    this.uploadFile = []
+                    this.uploadFileUrl = []
+                    
+                    file: for (let ii = 0, ll = this.formDesign[this.uploadKeyList[i]].length; ii < ll; ii++) {
+                        if (this.formDesign[this.uploadKeyList[i]][ii].status === 'ready') {
+                            this.uploadindKey = this.uploadKeyList[i]
+                            let funcImageFile = this.formDesign[this.uploadKeyList[i]][ii].raw
+                            let funcFormData = new FormData()
+                            funcFormData.append('file', funcImageFile)
+                            let funcAxios = axiosPost(host().server + '/f/api/app/v2/getUrl', funcFormData)
+                                                .then((response) => { this.uploadFileUrl.push(response.data.fileId) })
+                            this.uploadFile.push(funcAxios)
+                        }
+                    }
+
+                    if (this.uploadFile.length > 0) {
+                        Promise.all(this.uploadFile)
+                            .then(() => {
+                                for (let i = 0, l = this.formDesign[this.uploadindKey].length; i < l; i++) {
+                                    if (this.formDesign[this.uploadindKey][i].status === 'ready') {
+                                        this.formDesign[this.uploadindKey][i].uploadUrl = this.uploadFileUrl[i]
+                                        this.formDesign[this.uploadindKey][i].status = 'success'
+                                    }
+                                }
+                                this.uploadAllImage()
+                            })
+                            .catch(() => {
+                                console.log('uploadAllImage catch')
+                            })
+                        return
+                    }
+                }
+                this.saveForm()
+            },
+
+            /**
+             *  表单 - 保存表单
+             *  @function
+             *  @param {string} funcType
+             *  @returns
+             */
+            saveForm: function (funcType) {
+                let funcFormSaveData = JSON.parse(JSON.stringify(this.formDesign))
+                let funcFormKey = Object.keys(funcFormSaveData)
+
+                // 重新设置图片路径从 loadUrl 赋值到 url
+                for (let i = 0, l = funcFormKey.length; i < l; i++) {
+                    if (Object.prototype.toString.call(funcFormSaveData[funcFormKey[i]]) === '[object Array]') {
+                        switch (Object.prototype.toString.call(funcFormSaveData[funcFormKey[i]][0])) {
+                            case '[object String]':
+                                funcFormSaveData[funcFormKey[i]] = funcFormSaveData[funcFormKey[i]].join(',　')
+                                break
+
+                            case '[object Object]':
+                                for (let ii = 0, ll = funcFormSaveData[funcFormKey[i]].length; ii < ll; ii++) {
+                                    funcFormSaveData[funcFormKey[i]][ii].url = funcFormSaveData[funcFormKey[i]][ii].uploadUrl
+                                }  
+                                break
+                        }
+                    }
+                }
+
+                let funcFields = []
+                for (let i = 0, l = this.widgetList.length; i < l; i++) {
+                    let funcItem = {
+                        'model': this.widgetList[i].model,
+                        'name': this.widgetList[i].name,
+                        'type': this.widgetList[i].type,
+                    }
+                    funcFields.push(funcItem)
+                }
+
+                // 替换 [] 为文本 '(空)'
+                funcFormSaveData = JSON.parse(JSON.stringify(funcFormSaveData).replace(/:\[\]/g, ':"(空)"').replace(/:""/g, ':"(空)"'))
+                
+                let funcParam = {
+                    'userId': this.$store.state.signInUser.id,
+                    'name': this.formUser.company,
+                    'estateId': this.formUser.code,
+                    'userName': this.formUser.name,
+                    'userPhone': this.formUser.contact,
+                    'formId': this.$route.query.formId,
+                    'questionnaireId': this.$route.query.id,
+                    'data': funcFormSaveData,
+                    'fields': funcFields,
+                }
+
+                console.log(JSON.stringify(funcParam))
+                
+                let funcFormData = new FormData()
+                funcFormData.append('requestParam', JSON.stringify(funcParam))
+                iRequest.request(iHost.base + 'f/api/app/v2/questionnaire/commit', funcFormData, 'file', 'post')
+                    .then((response) => {
+                        if (response.code) {
+                            this.tip = response.msg
+                            this.winTip = true
+                        } else {
+                            // this.showToast(response.resMessage)
+                        } 
+                    })
             },
 
             onUploadChange: function () {

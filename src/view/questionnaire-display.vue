@@ -1,8 +1,80 @@
 <template>
     <div class="questionnaire-display">
         <div class="phone" v-if="clientType === 'phone'">
-            <div>
-                <span>表单内容</span>
+            <div class="form-display">
+                <div v-for="(item, index) in formReturn" :key="index" class="form-item">
+                    <div v-if="item.type === 'input'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'radio'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'number'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'select'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'checkbox'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'textarea'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'imgupload'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <div class="form-item-content-image" v-for="(valueItem, indexItem) in formReturnValue[item.model]" :key="indexItem">
+                                <img :src="host + valueItem.url" @click="onImageDetail(host + valueItem.url)" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="info">
                 <div class="info-title row con-c align-c">
@@ -34,7 +106,81 @@
             <div class="questionnaire-title row con-c align-c">
                 <span>{{formDetail.title}}</span>
             </div>
-            <div></div>
+            <div class="form-display">
+                <div v-for="(item, index) in formReturn" :key="index" class="form-item">
+                    <div v-if="item.type === 'input'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'radio'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'number'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'select'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'checkbox'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'textarea'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <p>{{formReturnValue[item.model]}}</p>
+                        </div>
+                    </div>
+
+                    <div v-if="item.type === 'imgupload'">
+                        <div class="form-item-title">
+                            <div></div>
+                            <div>{{item.name}}</div>
+                        </div>
+                        <div class="form-item-content">
+                            <div class="form-item-content-image" v-for="(valueItem, indexItem) in formReturnValue[item.model]" :key="indexItem">
+                                <img :src="host + valueItem.url" @click="onImageDetail(host + valueItem.url)" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="info">
                 <div class="info-title row con-c align-c">
                     <span>企业资料</span>
@@ -74,7 +220,14 @@
     export default {
         data: function () {
             return {
+                host: iHost.base,
                 clientType: this.$store.state.clientType,
+
+                // 表单数据
+                formReturn: [],                 // 表单结构信息
+                formReturnInfo: {},             // 表单配置信息
+                formReturnValue: {},            // 表单数据
+
                 formDetail: {
                     title: '企业员工满意度调查',
                 },
@@ -105,12 +258,125 @@
         },
         methods: {
             queryForm: function () {
-                this.formUser = {
-                    company: '公司名称',
-                    code: '123465',
-                    name: '阿狗',
-                    contact: '18000000000',
-                }
+                let funcParam = JSON.stringify({
+                    'formId': this.$route.query.formId,
+                    'dataId': this.$route.query.dataId
+                })
+                let funcFormData = new FormData()
+                funcFormData.append('requestParam', funcParam)
+                iRequest.request(iHost.base + 'f/api/app/v2/questionnaire/myQuestionnaire', funcFormData, 'file', 'post')
+                    .then((response) => {
+                        console.log(response)
+
+                        this.formReturn = JSON.parse(response.source).list
+                        for(let i = 0, l = this.formReturn.length; i < l; i++) {
+                            let funcFormReturnInfo = {}
+                            switch (this.formReturn[i].type) {
+                                case 'input':
+                                    funcFormReturnInfo = {
+                                        'type': this.formReturn[i].type
+                                    }
+                                    this.formReturnInfo[this.formReturn[i].model] = funcFormReturnInfo
+                                    this.$set(this.formReturnValue, this.formReturn[i].model, '')
+                                    break
+
+                                case 'textarea':
+                                    funcFormReturnInfo = {
+                                        'type': this.formReturn[i].type
+                                    }
+                                    this.formReturnInfo[this.formReturn[i].model] = funcFormReturnInfo
+                                    this.$set(this.formReturnValue, this.formReturn[i].model, '')
+                                    break
+
+                                case 'number':
+                                    funcFormReturnInfo = {
+                                        'type': this.formReturn[i].type
+                                    }
+                                    this.formReturnInfo[this.formReturn[i].model] = funcFormReturnInfo
+                                    this.$set(this.formReturnValue, this.formReturn[i].model, 0)
+                                    break
+
+                                case 'radio':
+                                    funcFormReturnInfo = {
+                                        'type': this.formReturn[i].type,
+                                        'option': this.formReturn[i].options.options
+                                    }
+                                    this.formReturnInfo[this.formReturn[i].model] = funcFormReturnInfo
+                                    this.$set(this.formReturnValue, this.formReturn[i].model, '')
+                                    break
+
+                                case 'checkbox':
+                                    funcFormReturnInfo = {
+                                        'type': this.formReturn[i].type,
+                                        'option': this.formReturn[i].options.options
+                                    }
+                                    this.formReturnInfo[this.formReturn[i].model] = funcFormReturnInfo
+                                    this.$set(this.formReturnValue, this.formReturn[i].model, '')
+                                    break
+
+                                case 'select':
+                                    funcFormReturnInfo = {
+                                        'type': this.formReturn[i].type,
+                                        'option': this.formReturn[i].options.options
+                                    }
+                                    this.formReturnInfo[this.formReturn[i].model] = funcFormReturnInfo
+                                    this.$set(this.formReturnValue, this.formReturn[i].model, '')
+                                    break
+
+                                case 'imgupload':
+                                    funcFormReturnInfo = {
+                                        'type': this.formReturn[i].type
+                                    }
+                                    this.formReturnInfo[this.formReturn[i].model] = funcFormReturnInfo
+                                    this.$set(this.formReturnValue, this.formReturn[i].model, [])
+                                    break
+                            }
+                        }
+
+                        this.formUser = {
+                            company: response.obj.owner_city,
+                            code: response.obj.owner_community,
+                            name: response.obj.owner_name,
+                            contact: response.obj.owner_phone,
+                        }
+
+                        let funcFormReturn = response.obj
+                        delete funcFormReturn.owner_city
+                        delete funcFormReturn.owner_name
+                        delete funcFormReturn.owner_phone
+                        delete funcFormReturn.owner_community
+
+                        let funcFormReturnKey = Object.keys(this.formReturnValue)
+
+                        // 还原数据应有类型
+                        for (let i = 0, l = funcFormReturnKey.length; i < l; i++) {
+                            switch(Object.prototype.toString.call(this.formReturnValue[funcFormReturnKey[i]])) {
+                                case '[object Number]': 
+                                    this.$set(this.formReturnValue, funcFormReturnKey[i], Number(funcFormReturn[funcFormReturnKey[i]]))
+                                    break
+
+                                case '[object Boolean]': 
+                                    this.$set(this.formReturnValue, funcFormReturnKey[i], Boolean(funcFormReturn[funcFormReturnKey[i]]))
+                                    break
+
+                                case '[object Array]': 
+                                    let funcArray = JSON.parse(funcFormReturn[funcFormReturnKey[i]])
+                                    if (funcArray.length && funcArray[0].status) {
+                                        for (let i = 0, l = funcArray.length; i < l; i++) {
+                                            if (funcArray[i].url.indexOf(host().server) >= 0) {
+                                                funcArray[i].url = funcArray[i].url.replace(host().server, '')
+                                            }
+                                        }
+                                    }
+                                    this.$set(this.formReturnValue, funcFormReturnKey[i], funcArray)
+                                    break
+
+                                default:
+                                    this.$set(this.formReturnValue, funcFormReturnKey[i], funcFormReturn[funcFormReturnKey[i]])
+                            }
+                        }
+                        console.log(this.formReturnValue)
+                    })
             },
 
             onSubmit: function () {
@@ -121,10 +387,10 @@
 </script>
 <style lang="less">
     .questionnaire-display {
-// 移动端样式
+        // 移动端样式
         .phone {
             width: 100vw;
-            padding: 0 2.5rem;
+            padding: 2.5rem;
 
             .form {
                 width: 100%;
@@ -132,6 +398,25 @@
                 margin-top: 2.6rem;
                 background: #FFFFFF;
             }
+
+            .form-display {
+                padding: 4rem 0;
+                background: #FFFFFF;
+                .form-item {
+                    margin: 4rem 6.2rem;
+                    .form-item-title {
+                        margin-bottom: 2.6rem;
+                        font-size: 1.5rem;
+                        font-weight: 800;
+                        color: #000000;
+                    }
+
+                    .form-item-content {
+                        color: #595959;
+                    }
+                }
+            }
+
 
             .info {
                 .info-title {
@@ -205,12 +490,26 @@
             opacity: 0.9;
         
             .questionnaire-title {
-                height: 34px;
-                margin: 44px 0;
+                height: 120px;
                 font-size: 34px;
                 font-weight: 800;
                 color: #000000;
             }
+
+            .form-item {
+                margin: 40px 62px;
+                .form-item-title {
+                    margin-bottom: 26px;
+                    font-size: 15px;
+                    font-weight: 800;
+                    color: #000000;
+                }
+
+                .form-item-content {
+                    color: #595959;
+                }
+            }
+
 
             .info {
                 padding: 0 62px;

@@ -1,6 +1,7 @@
 let output = {
     // 开发路径
     base: 'http://form.meiqicloud.com/',
+    // base: 'http://192.168.31.209:8080/customer_form/',
 
     // 测试环境
     // base: '/Api/',
