@@ -28,9 +28,6 @@ let output = {
         if (funcMethod) funcConfigure.method = funcMethod
         
         Object.assign(funcConfigure, funcOther)
-        console.log(funcConfigure)
-
-
 
         // get 请求需要将参数转换为 url 形式
         if (funcConfigure.method === 'get') {
@@ -92,7 +89,6 @@ let output = {
                         if (funcInterceptorsResponse.state) {
                             funcResolve(funcInterceptorsResponse.response)
                         } else {
-                            console.log('funcReject')
                             iVue.$message.error(funcInterceptorsResponse.response.message)
                             funcReject(funcInterceptorsResponse.response)
                         }

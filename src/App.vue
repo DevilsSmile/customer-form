@@ -72,15 +72,9 @@
                         break
 
                     case 'invalid':
-                        this.$store.commit('isSignIn', false)
+                        // this.$store.commit('isSignIn', false)
                         break
                 }
-
-                // let funcSignInUser = localStorage.getItem('signInUser')
-                // if (funcSignInUser) {
-                //     this.$store.commit('signInUser', JSON.parse(funcSignInUser))
-                //     this.$store.commit('isSignIn', true)
-                // }
             },
         },
     }
@@ -92,7 +86,7 @@
         flex-direction: column;
         align-items: center;
         min-height: 100vh;
-        background-image: url(@backgroundImageUrl);
+        background-image: url('./assets/backdrop.png');
         background-repeat: no-repeat;
         background-size: 100%;
         background-color: #f5f3f6;

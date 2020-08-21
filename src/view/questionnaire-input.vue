@@ -31,28 +31,26 @@
                                 </el-select>
                             </template>
                             <template v-if="item.type == 'imgupload'">
-                                <div @click="onAndroidUpload(item)">
-                                    <el-upload
-                                        class="fr-upload"
-                                        action="#"
-                                        :multiple="true"
-                                        list-type="picture-card"
-                                        :limit="item.options.limit"
-                                        :auto-upload="false"
-                                        :file-list="formDesign[item.model]"
-                                        :on-change="(file, fileList) => { onUploadChange(file, fileList, item) }"
-                                        :on-exceed="onUploadExceed"
-                                        :on-remove="(file, fileList) => { onUploadRemove(file, fileList, item) }"
-                                    >
-                                        <i class="el-icon-plus"></i>
-                                    </el-upload>
-                                </div>
+                                <el-upload
+                                    class="fr-upload"
+                                    action="#"
+                                    :multiple="true"
+                                    list-type="picture-card"
+                                    :limit="item.options.limit"
+                                    :auto-upload="false"
+                                    :file-list="formDesign[item.model]"
+                                    :on-change="(file, fileList) => { onUploadChange(file, fileList, item) }"
+                                    :on-exceed="onUploadExceed"
+                                    :on-remove="(file, fileList) => { onUploadRemove(file, fileList, item) }"
+                                >
+                                    <i class="el-icon-plus"></i>
+                                </el-upload>
                             </template>
                         </el-form-item>
                     </div>
                 </el-form>
             </div>
-            <div class="info">
+            <div v-if="isPreview" class="info">
                 <div class="info-title row con-c align-c">
                     <span>确认您的信息</span>
                 </div>
@@ -112,28 +110,26 @@
                                 </el-select>
                             </template>
                             <template v-if="item.type == 'imgupload'">
-                                <div @click="onAndroidUpload(item)">
-                                    <el-upload
-                                        class="fr-upload"
-                                        action="#"
-                                        :multiple="true"
-                                        list-type="picture-card"
-                                        :limit="item.options.limit"
-                                        :auto-upload="false"
-                                        :file-list="formDesign[item.model]"
-                                        :on-change="(file, fileList) => { onUploadChange(file, fileList, item) }"
-                                        :on-exceed="onUploadExceed"
-                                        :on-remove="(file, fileList) => { onUploadRemove(file, fileList, item) }"
-                                    >
-                                        <i class="el-icon-plus"></i>
-                                    </el-upload>
-                                </div>
+                                <el-upload
+                                    class="fr-upload"
+                                    action="#"
+                                    :multiple="true"
+                                    list-type="picture-card"
+                                    :limit="item.options.limit"
+                                    :auto-upload="false"
+                                    :file-list="formDesign[item.model]"
+                                    :on-change="(file, fileList) => { onUploadChange(file, fileList, item) }"
+                                    :on-exceed="onUploadExceed"
+                                    :on-remove="(file, fileList) => { onUploadRemove(file, fileList, item) }"
+                                >
+                                    <i class="el-icon-plus"></i>
+                                </el-upload>
                             </template>
                         </el-form-item>
                     </div>
                 </el-form>
             </div>
-            <div class="info">
+            <div v-if="isPreview" class="info">
                 <div class="info-title row con-c align-c">
                     <span>确认您的信息</span>
                 </div>
@@ -182,6 +178,8 @@
                 uploadFile: [],
                 uploadFileUrl: [],
 
+                isPreview: false,
+
                 formDetail: {
                     title: '企业员工满意度调查',
                 },
@@ -208,6 +206,11 @@
             }
         },
         created: function () {
+            if (this.$route.query.preview === 'true') {
+                this.isPreview = false
+            } else {
+                this.isPreview = true
+            }
             if (this.$route.query.formId) {
                 this.queryForm()
             } else {
@@ -261,28 +264,12 @@
                                     break
                             }
                         }
-
-                        console.log('this.formDesign', this.formDesign)
                     })
             },
 
             onSubmit: function () {
                 this.$refs['formUser'].validate((pass) => {
                     if (pass) {
-                        // let funcParam = JSON.stringify({
-                        //     'userId': this.formCompanyInfo.id,
-                        //     'oldPassword': iCrypto.MD5(this.formResetPassword.oldPassword).toString(),
-                        //     'newPassword': iCrypto.MD5(this.formResetPassword.newPassword).toString()
-                        // })
-
-                        // let funcFormData = new FormData()
-                        // funcFormData.append('requestParam', funcParam)
-                        // iRequest.request(iHost.base + 'f/api/user/pwdModify', funcFormData, 'file', 'post')
-                        //     .then((funcResponse) => {
-
-                        //     })
-                        //     .catch((funcError) => {})
-
                         // 校验动态表单必填项目
                         for (let i = 0, l = this.widgetList.length; i < l; i++) {
                             if (this.widgetList[i].options.required) {
@@ -292,7 +279,7 @@
                                     case 'radio':
                                     case 'select':
                                         if (!this.formDesign[this.widgetList[i].model] && this.formDesign[this.widgetList[i].model] !== 0) {
-                                            // this.showToast('您有必填的题目未填写，请填写完整再提交')
+                                            this.$message.error('您有必填的题目未填写，请填写完整再提交')
                                             return
                                         }
                                         break
@@ -304,7 +291,7 @@
                                     case 'checkbox':
                                     case 'imgupload':
                                         if (this.formDesign[this.widgetList[i].model].length === 0) {
-                                            // this.showToast('您有必填的题目未填写，请填写完整再提交')
+                                            this.$message.error('您有必填的题目未填写，请填写完整再提交')
                                             return
                                         }
                                         break
@@ -340,8 +327,10 @@
                             let funcImageFile = this.formDesign[this.uploadKeyList[i]][ii].raw
                             let funcFormData = new FormData()
                             funcFormData.append('file', funcImageFile)
-                            let funcAxios = axiosPost(host().server + '/f/api/app/v2/getUrl', funcFormData)
-                                                .then((response) => { this.uploadFileUrl.push(response.data.fileId) })
+                            let funcAxios = iRequest.request(iHost.base + 'f/api/user/uploadFile', funcFormData, 'file', 'post')
+                                                .then((response) => {
+                                                    this.uploadFileUrl.push(response.fileId)
+                                                })
                             this.uploadFile.push(funcAxios)
                         }
                     }
@@ -417,30 +406,62 @@
                     'data': funcFormSaveData,
                     'fields': funcFields,
                 }
-
-                console.log(JSON.stringify(funcParam))
                 
                 let funcFormData = new FormData()
                 funcFormData.append('requestParam', JSON.stringify(funcParam))
                 iRequest.request(iHost.base + 'f/api/app/v2/questionnaire/commit', funcFormData, 'file', 'post')
                     .then((response) => {
-                        if (response.code) {
-                            this.tip = response.msg
-                            this.winTip = true
-                        } else {
-                            // this.showToast(response.resMessage)
-                        } 
+                        this.$message({ message: '提交成功', type: 'success' })
+                        this.$router.push('/')
                     })
             },
 
-            onUploadChange: function () {
+            /**
+             *  上传组件 - 文件格式
+             *  @function
+             *  @param {object} funcFile
+             *  @returns
+             */
+            checkFileFormat: function (funcFile, funcSize) {
+                if (funcFile.raw.type !== 'image/png' && funcFile.raw.type !== 'image/jpeg' && funcFile.raw.type !== 'image/bmp') {
+                    this.$message.error('请上传图片')
+                    return false
+                }
+                if (funcFile.size >= funcSize * 1024) { 
+                    this.$message.error('文件大小不超过' + funcSize + 'KB')
+                    return false
+                }
+                return true
+            },
 
+            onUploadChange: function (funcFile, funcFileList, funcItem) {
+                if (funcFile.status === 'ready') {
+                    if (this.checkFileFormat(funcFile, funcItem.options.size)) {
+                        // 重新定义上传文件名称
+                        let funcFileFormat = funcFile.name.substring(funcFile.name.lastIndexOf('.'), funcFile.name.length)
+                        let funcFileName = (new Date() - 0) + funcFileFormat
+                        let funcCopyFile = new File([funcFile.raw], funcFileName, { type: funcFile.raw.type})
+                        funcCopyFile.uid = funcFile.raw.uid
+                        funcFile.raw = funcCopyFile
+                        funcFile.name = funcFileName
+
+                        this.formDesign[funcItem.model].push(funcFile)
+                    } else {
+                        let funcImageBuffer = JSON.stringify(this.formDesign[funcItem.model])
+                        this.formDesign[funcItem.model] = []
+                        this.formDesign[funcItem.model] = JSON.parse(funcImageBuffer)
+                    }
+                }
+            },
+
+            onUploadRemove: function (funcFile, funcFileList, funcItem) {
+                this.formDesign[funcItem.model] = funcFileList
             },
 
             onUploadExceed: function () {
                 switch (this.clientType) {
                     case 'phone':
-                        
+                        this.$message.error('图片上传已上限，无法添加')
                         break
 
                     case 'pc':
@@ -455,8 +476,10 @@
     .questionnaire-input {
         // 移动端样式
         .phone {
-            width: 100vw;
+            width: calc(100vw - 5rem);
+            margin: 2.5rem;
             padding: 0 2.5rem;
+            background: #FFFFFF;
 
             .form {
                 width: 100%;
@@ -545,6 +568,8 @@
         .pc {
             width: 1200px;
             min-height: 1110px;
+            margin-bottom: 80px;
+            padding-bottom: 80px;
             background: #FFFFFF;
             box-shadow: 1px 5px 15px 0px rgba(0, 0, 0, 0.1);
             border-radius: 10px;

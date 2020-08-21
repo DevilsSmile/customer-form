@@ -40,48 +40,23 @@
                 clientType: this.$store.state.clientType,
                 formCompanyInfo: {},
                 questionnaireList: [],
-
-
-
-
-
-                signInEntry: 'signIn',
-            }
-        },
-
-        computed: {
-            isSignIn: function () {
-                return this.$store.state.isSignIn
-            },
-            signInUser: function () {
-                return this.$store.state.signInUser
-            },
-        },
-
-        watch: {
-            isSignIn: {
-                handler: function (funcNewValue, funcOldValue) {
-                    console.log('home', funcNewValue)
-                    if (!funcNewValue) return
-                    this.queryQuestionnaire()
-                },
-                deep: true,
-                immediate: true,
-            },
-            signInUser: {
-                handler: function (funcNewValue, funcOldValue) {
-                    console.log('signInUser', funcNewValue)
-                    if (!funcNewValue) return
-                    this.formCompanyInfo = funcNewValue
-                    this.queryQuestionnaire()
-                },
-                deep: true,
-                immediate: true,
             }
         },
 
         created: function () {
-
+            if (this.$route.query.isBackstage) {
+                console.log('1')
+                let funcItem = {
+                    'id': '',
+                    'dataId': this.$route.query.dataId,
+                    'formId': this.$route.query.formId,
+                }
+                this.onQueryDetail(funcItem)
+                return
+            } else {
+                console.log('2')
+                this.queryQuestionnaire()
+            }
         },
         methods: {
             /**
@@ -91,11 +66,8 @@
              *  @returns
              */
             queryQuestionnaire: function () {
-                if (!this.isSignIn) return
-                if (JSON.stringify(this.formCompanyInfo) === '{}') return 
-
                 let funcParam = JSON.stringify({
-                    'userId': this.formCompanyInfo.id
+                    // 'userId': this.formCompanyInfo.id
                 })
 
                 let funcFormData = new FormData()
@@ -113,10 +85,8 @@
                                 'title': funcRawData[i].title,
                                 'date': funcRawData[i].endDate,   
                                 'source': funcRawData[i].source,
-                                // isValid
+                                'isValid': funcRawData[i].status === '2' ? true : false
                             }
-
-                            iMiment(funcItem.date).stamp() < new Date().getTime() ? funcItem.isValid = true : funcItem.isValid = false
                             funcList.push(funcItem)
                         }
                         this.questionnaireList = funcList
@@ -139,7 +109,7 @@
 
 <style lang="less">
     .home {
-        border: 1px @red solid;
+
     }
     // phone 样式
     .questionnaire-phone {

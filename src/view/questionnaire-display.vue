@@ -72,6 +72,7 @@
                             <div class="form-item-content-image" v-for="(valueItem, indexItem) in formReturnValue[item.model]" :key="indexItem">
                                 <img :src="host + valueItem.url" @click="onImageDetail(host + valueItem.url)" />
                             </div>
+                            <span v-if="formReturnValue[item.model].length">（空）</span>
                         </div>
                     </div>
                 </div>
@@ -177,6 +178,7 @@
                             <div class="form-item-content-image" v-for="(valueItem, indexItem) in formReturnValue[item.model]" :key="indexItem">
                                 <img :src="host + valueItem.url" @click="onImageDetail(host + valueItem.url)" />
                             </div>
+                            <span v-if="formReturnValue[item.model].length === 0">（空）</span>
                         </div>
                     </div>
                 </div>
@@ -333,6 +335,8 @@
                             }
                         }
 
+                        console.log('formReturnValue', JSON.stringify(this.formReturnValue))
+
                         this.formUser = {
                             company: response.obj.owner_city,
                             code: response.obj.owner_community,
@@ -360,11 +364,17 @@
                                     break
 
                                 case '[object Array]': 
-                                    let funcArray = JSON.parse(funcFormReturn[funcFormReturnKey[i]])
+                                    let funcArray
+                                    try {
+                                        funcArray = JSON.parse(funcFormReturn[funcFormReturnKey[i]])
+                                    }
+                                    catch(err) {
+                                        funcArray = []
+                                    }
                                     if (funcArray.length && funcArray[0].status) {
                                         for (let i = 0, l = funcArray.length; i < l; i++) {
-                                            if (funcArray[i].url.indexOf(host().server) >= 0) {
-                                                funcArray[i].url = funcArray[i].url.replace(host().server, '')
+                                            if (funcArray[i].url.indexOf(iHost.base) >= 0) {
+                                                funcArray[i].url = funcArray[i].url.replace(iHost.base, '')
                                             }
                                         }
                                     }
@@ -484,6 +494,7 @@
         .pc {
             width: 1200px;
             min-height: 1110px;
+            margin-bottom: 80px;
             background: #FFFFFF;
             box-shadow: 1px 5px 15px 0px rgba(0, 0, 0, 0.1);
             border-radius: 10px;

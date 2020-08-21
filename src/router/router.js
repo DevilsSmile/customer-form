@@ -22,7 +22,8 @@ export default new Router({
         //         { path: 'forget', name: 'signInForget', mapText: '忘记密码', component: () => import('@/view/sign-in-forget.vue') },
         //     ]
         // },
-        { path: '*', name: '404', meta: { title: '404' }, component: () => import('@/view/404.vue')}
+        { path: '*', name: 'questionnaire-displaybb', component: () => import('@/view/questionnaire-display.vue') },
+        // { path: '*', name: '404', meta: { title: '404' }, component: () => import('@/view/404.vue')}
     ],
     scrollBehavior(to, from, savedPosition) {
         return {
