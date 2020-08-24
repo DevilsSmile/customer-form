@@ -6,7 +6,7 @@
                     <div v-if="item.type === 'input'">
                         <div class="form-item-title">
                             <div></div>
-                            <div>{{item.name}}</div>
+                            <div :class="item.options.required ? 'form-item-required' : ''">{{item.name}}</div>
                         </div>
                         <div class="form-item-content">
                             <p>{{formReturnValue[item.model]}}</p>
@@ -16,7 +16,7 @@
                     <div v-if="item.type === 'radio'">
                         <div class="form-item-title">
                             <div></div>
-                            <div>{{item.name}}</div>
+                            <div :class="item.options.required ? 'form-item-required' : ''">{{item.name}}</div>
                         </div>
                         <div class="form-item-content">
                             <p>{{formReturnValue[item.model]}}</p>
@@ -26,7 +26,7 @@
                     <div v-if="item.type === 'number'">
                         <div class="form-item-title">
                             <div></div>
-                            <div>{{item.name}}</div>
+                            <div :class="item.options.required ? 'form-item-required' : ''">{{item.name}}</div>
                         </div>
                         <div class="form-item-content">
                             <p>{{formReturnValue[item.model]}}</p>
@@ -36,7 +36,7 @@
                     <div v-if="item.type === 'select'">
                         <div class="form-item-title">
                             <div></div>
-                            <div>{{item.name}}</div>
+                            <div :class="item.options.required ? 'form-item-required' : ''">{{item.name}}</div>
                         </div>
                         <div class="form-item-content">
                             <p>{{formReturnValue[item.model]}}</p>
@@ -46,7 +46,7 @@
                     <div v-if="item.type === 'checkbox'">
                         <div class="form-item-title">
                             <div></div>
-                            <div>{{item.name}}</div>
+                            <div :class="item.options.required ? 'form-item-required' : ''">{{item.name}}</div>
                         </div>
                         <div class="form-item-content">
                             <p>{{formReturnValue[item.model]}}</p>
@@ -56,7 +56,7 @@
                     <div v-if="item.type === 'textarea'">
                         <div class="form-item-title">
                             <div></div>
-                            <div>{{item.name}}</div>
+                            <div :class="item.options.required ? 'form-item-required' : ''">{{item.name}}</div>
                         </div>
                         <div class="form-item-content">
                             <p>{{formReturnValue[item.model]}}</p>
@@ -66,13 +66,13 @@
                     <div v-if="item.type === 'imgupload'">
                         <div class="form-item-title">
                             <div></div>
-                            <div>{{item.name}}</div>
+                            <div :class="item.options.required ? 'form-item-required' : ''">{{item.name}}</div>
                         </div>
                         <div class="form-item-content">
                             <div class="form-item-content-image" v-for="(valueItem, indexItem) in formReturnValue[item.model]" :key="indexItem">
                                 <img :src="host + valueItem.url" @click="onImageDetail(host + valueItem.url)" />
                             </div>
-                            <span v-if="formReturnValue[item.model].length">（空）</span>
+                            <span v-if="formReturnValue[item.model].length === 0">（空）</span>
                         </div>
                     </div>
                 </div>
@@ -99,6 +99,9 @@
                         <span class="info-item-value">{{formUser.contact}}</span>
                     </div>
                 </div>
+            </div>
+            <div class="row con-c align-c">
+                <el-button class="button-submit" @click.prevent="onRouteHome()">返回</el-button>
             </div>
         </div>
 
@@ -259,6 +262,9 @@
             this.queryForm()
         },
         methods: {
+            onRouteHome: function () {
+                this.$router.push('/apppage/')
+            },
             queryForm: function () {
                 let funcParam = JSON.stringify({
                     'formId': this.$route.query.formId,
@@ -388,10 +394,6 @@
                         console.log(this.formReturnValue)
                     })
             },
-
-            onSubmit: function () {
-                console.log('onSubmit')
-            },
         }
     }
 </script>
@@ -413,16 +415,28 @@
                 padding: 4rem 0;
                 background: #FFFFFF;
                 .form-item {
-                    margin: 4rem 6.2rem;
+                    margin: 4rem 3.2rem;
+                    .form-item-required::before {
+                        display: inline-block;
+                        content: '*';
+                        color: #FF0000;
+                    }
+
                     .form-item-title {
                         margin-bottom: 2.6rem;
-                        font-size: 1.5rem;
+                        font-size: 2.8rem;
                         font-weight: 800;
                         color: #000000;
                     }
 
                     .form-item-content {
+                        font-size: 2.4rem;
                         color: #595959;
+                    }
+
+                    .form-item-content-image img {
+                        width: 14rem;
+                        height: 14rem;
                     }
                 }
             }
@@ -474,20 +488,16 @@
                 }
             }
 
-            .questionnaire-submit {
-                background: #FFFFFF;
+            .button-submit {
+                width: 64rem;
+                height: 8.8rem;
+                margin-top: 2rem;
+                background: linear-gradient(90deg, #F2F2F2 , #CCCCCC);
+                border: none;
+                border-radius: 4.4rem;
 
-                button {
-                    width: 64rem;
-                    height: 8.8rem;
-                    margin-bottom: 5rem;
-                    background: linear-gradient(90deg,#74BC90,#0C6CB0);
-                    border-radius: 4.4rem;
-
-                    font-size: 3rem;
-                    font-weight: 500;
-                    color: #FFFFFF;
-                }
+                font-size: 3rem;
+                color: #666666;
             }
         }
         
@@ -518,6 +528,11 @@
 
                 .form-item-content {
                     color: #595959;
+                }
+
+                .form-item-content-image img {
+                    width: 140px;
+                    height: 140px;
                 }
             }
 

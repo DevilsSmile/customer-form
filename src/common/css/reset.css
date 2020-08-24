@@ -17,6 +17,11 @@ time, mark, audio, video {
     padding: 0;
 }
 
+/* IOS 禁止微信浏览器调整字体大小 */
+body {
+    text-size-adjust: none !important;
+}
+
 input,
 input:focus,
 input:hover { 

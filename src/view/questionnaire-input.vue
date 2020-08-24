@@ -36,7 +36,7 @@
                                     action="#"
                                     :multiple="true"
                                     list-type="picture-card"
-                                    :limit="item.options.limit"
+                                    :limit="Number(item.options.limit)"
                                     :auto-upload="false"
                                     :file-list="formDesign[item.model]"
                                     :on-change="(file, fileList) => { onUploadChange(file, fileList, item) }"
@@ -115,7 +115,7 @@
                                     action="#"
                                     :multiple="true"
                                     list-type="picture-card"
-                                    :limit="item.options.limit"
+                                    :limit="Number(item.options.limit)"
                                     :auto-upload="false"
                                     :file-list="formDesign[item.model]"
                                     :on-change="(file, fileList) => { onUploadChange(file, fileList, item) }"
@@ -205,6 +205,28 @@
                 },
             }
         },
+        computed: {
+            signInUser: function () {
+                return this.$store.state.signInUser
+            },
+        },
+
+        watch: {
+            signInUser: {
+                handler: function (funcNewValue, funcOldValue) {
+                    console.log('input', funcNewValue)
+                    this.formUser = {
+                        company: funcNewValue.companyName,
+                        code: funcNewValue.companyCode,
+                        name: funcNewValue.name,
+                        contact: funcNewValue.contact,
+                    }
+                },
+                deep: true,
+                immediate: true,
+            },
+        },
+
         created: function () {
             if (this.$route.query.preview === 'true') {
                 this.isPreview = false
@@ -214,7 +236,7 @@
             if (this.$route.query.formId) {
                 this.queryForm()
             } else {
-                this.$router.push('/')
+                this.$router.push('/apppage/')
             }
         },
         methods: {
@@ -411,8 +433,8 @@
                 funcFormData.append('requestParam', JSON.stringify(funcParam))
                 iRequest.request(iHost.base + 'f/api/app/v2/questionnaire/commit', funcFormData, 'file', 'post')
                     .then((response) => {
-                        this.$message({ message: '提交成功', type: 'success' })
-                        this.$router.push('/')
+                        this.$message({ message: '谢谢您的参与', type: 'success' })
+                        this.$router.push('/apppage/')
                     })
             },
 
@@ -474,7 +496,6 @@
 </script>
 <style lang="less">
     .questionnaire-input {
-        // 移动端样式
         .phone {
             width: calc(100vw - 5rem);
             margin: 2.5rem;
@@ -486,6 +507,15 @@
                 height: 10rem;
                 margin-top: 2.6rem;
                 background: #FFFFFF;
+            }
+
+            .input-form {
+                .el-form-item {
+                    label {
+                        font-size: 2.4rem;
+                        color: #000000;
+                    }
+                }
             }
 
             .info {
@@ -543,6 +573,31 @@
                             font-weight: 400;
                             color: #9A9A9A;
                         }
+                    }
+                }
+            }
+
+            .fr-upload {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                
+                > div {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    width: 10rem;
+                    height: 10rem;
+                }
+
+                ul {
+                    height: 10rem;
+                    li {
+                        display: inline-block;
+                        width: 10rem;
+                        height: 10rem;
                     }
                 }
             }

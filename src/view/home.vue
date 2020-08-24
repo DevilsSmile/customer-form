@@ -7,8 +7,9 @@
                     <span class="questionnaire-phone-date">{{'结束时间：' + item.date}}</span>
                 </div>
                 <div class="questionnaire-phone-operation row con-b align-c">
-                    <button class="button-phone-detail" @click="onQueryDetail(item)">问卷详情</button>
-                    <button class="button-phone-reset" @click="onReset(item)">重新填写</button>
+                    <button v-if="item.dataId" class="button-phone-detail" @click="onQueryDetail(item)">问卷详情</button>
+                    <button v-if="item.dataId && item.status === 2" class="button-phone-reset" @click="onReset(item)">重新填写</button>
+                    <button v-if="!item.dataId && item.status === 2" class="button-phone-reset" @click="onReset(item)">填写问卷</button>
                 </div>
             </div>
         </div>
@@ -18,11 +19,12 @@
             <div class="questionnaire-item row con-b align-c" v-for="(item, index) in questionnaireList" :key="index">
                 <div class="column">
                     <span class="questionnaire-title">{{item.title}}</span>
-                    <span class="questionnaire-date">{{item.date}}</span>
+                    <span class="questionnaire-date">{{'结束时间：' + item.date}}</span>
                 </div>
                 <div class="questionnaire-operation row con-b align-c">
-                    <button class="button-detail" @click="onQueryDetail(item)">问卷详情</button>
-                    <button class="button-reset" @click="onReset(item)">重新填写</button>
+                    <button v-if="item.dataId" class="button-detail" @click="onQueryDetail(item)">问卷详情</button>
+                    <button v-if="item.dataId && item.status === 2" class="button-reset" @click="onReset(item)">重新填写</button>
+                    <button v-if="!item.dataId && item.status === 2" class="button-reset" @click="onReset(item)">填写问卷</button>
                 </div>
             </div>
         </div>
@@ -43,9 +45,35 @@
             }
         },
 
+        computed: {
+            isSignIn: function () {
+                return this.$store.state.isSignIn
+            },
+            signInUser: function () {
+                return this.$store.state.signInUser
+            },
+        },
+
+        watch: {
+            isSignIn: {
+                handler: function (funcNewValue, funcOldValue) {
+                    if (!funcNewValue) return
+                    this.queryQuestionnaire()
+                },
+                deep: true,
+                immediate: true,
+            },
+            signInUser: {
+                handler: function (funcNewValue, funcOldValue) {
+
+                },
+                deep: true,
+                immediate: true,
+            },
+        },
+
         created: function () {
             if (this.$route.query.isBackstage) {
-                console.log('1')
                 let funcItem = {
                     'id': '',
                     'dataId': this.$route.query.dataId,
@@ -53,10 +81,18 @@
                 }
                 this.onQueryDetail(funcItem)
                 return
-            } else {
-                console.log('2')
-                this.queryQuestionnaire()
             }
+
+            // 后台二维码扫码预览
+            if (this.$route.query.preview) {
+                let funcItem = {
+                    'formId': this.$route.query.formId,
+                }
+                this.onQueryPreview(funcItem)
+                return
+            }
+
+            this.queryQuestionnaire()
         },
         methods: {
             /**
@@ -67,7 +103,7 @@
              */
             queryQuestionnaire: function () {
                 let funcParam = JSON.stringify({
-                    // 'userId': this.formCompanyInfo.id
+                    'userId': this.signInUser.id ? this.signInUser.id : ''
                 })
 
                 let funcFormData = new FormData()
@@ -84,8 +120,8 @@
                                 'formId': funcRawData[i].formId,
                                 'title': funcRawData[i].title,
                                 'date': funcRawData[i].endDate,   
-                                'source': funcRawData[i].source,
-                                'isValid': funcRawData[i].status === '2' ? true : false
+                                // 'source': funcRawData[i].source,
+                                'status': Number(funcRawData[i].status)
                             }
                             funcList.push(funcItem)
                         }
@@ -95,13 +131,19 @@
             },
 
             onQueryDetail: function (funcItem) {
-                console.log('onQueryDetail')
-                this.$router.push('/questionnairedisplay?id=' + funcItem.id + '&formId=' + funcItem.formId + '&dataId=' + funcItem.dataId)
+                this.$router.push('/apppage/questionnairedisplay?id=' + funcItem.id + '&formId=' + funcItem.formId + '&dataId=' + funcItem.dataId)
+            },
+
+            onQueryPreview: function (funcItem) {
+                this.$router.push('/apppage/questionnairepreview?formId=' + funcItem.formId)
             },
 
             onReset: function (funcItem) {
-                console.log('onReset')
-                this.$router.push('/questionnaireinput?id=' + funcItem.id + '&formId=' + funcItem.formId + '&dataId=' + funcItem.dataId)
+                if (!this.isSignIn) {
+                    this.$router.push('/apppage/signin')
+                    return
+                }
+                this.$router.push('/apppage/questionnaireinput?id=' + funcItem.id + '&formId=' + funcItem.formId + '&dataId=' + funcItem.dataId)
             },
         }
     }

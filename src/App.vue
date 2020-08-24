@@ -1,7 +1,13 @@
 <template>
     <div id="app">
-        <componentHeader></componentHeader>
+        <componentHeader v-if="winHeader"></componentHeader>
         <router-view></router-view>
+        <div v-if="!winHeader" class="wechat-tip row con-c align-c">
+            <div class="column">
+                <span>1. 请点击右上角'复制链接'</span>
+                <span>2. 打开浏览器粘贴链接进行查看</span>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -15,25 +21,39 @@
 
         data: function () {
             return {
-
+                clientType: 'pc',
+                winHeader: true,
             }
         },
 
         created: function () {
             if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|opera mini|opera mobile|appleWebkit.*mobile|mobile/i.test( navigator.userAgent )) {
-                console.log('phone')
                 this.$store.commit('clientType', 'phone')
+                this.clientType = 'phone'
             } else {
-                console.log('pc')
                 this.$store.commit('clientType', 'pc')
+                this.clientType = 'pc'
             }
         },
 
         mounted: function () {
+            // 判断是否微信内置浏览器
+            var ua = navigator.userAgent.toLowerCase()
+            // this.$message({ message: 'phone' + ua, type: 'success' })
+            if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+                this.winHeader = false
+            }
+
             window.onresize = () => {
+                this.phoneAdaptation()
+            }
+            this.phoneAdaptation()
+        },
+
+        methods: {
+            phoneAdaptation: function () {
                 let funcHtml = document.getElementsByTagName('html')[0]
                 let funcWindowWidth = window.innerWidth
-                funcHtml.style.fontSize = '5px'
 
                 if (750 <= funcWindowWidth) {
                     funcHtml.style.fontSize = '10px'
@@ -51,29 +71,12 @@
                     funcHtml.style.fontSize = '5.4px'
                 }
                 
-                if (funcWindowWidth < 410) {
+                if (350 <= funcWindowWidth && funcWindowWidth < 410) {
                     funcHtml.style.fontSize = '5px'
                 }
-            };
 
-            this.isSignIn()
-        },
-
-        methods: {
-            isSignIn: function () {
-                let funcTokenState = iToken.isSignIn()
-                switch (funcTokenState) {
-                    case 'valid':
-
-                        break
-
-                    case 'refresh':
-
-                        break
-
-                    case 'invalid':
-                        // this.$store.commit('isSignIn', false)
-                        break
+                if (250 <= funcWindowWidth && funcWindowWidth < 350) {
+                    funcHtml.style.fontSize = '4px'
                 }
             },
         },
@@ -90,5 +93,18 @@
         background-repeat: no-repeat;
         background-size: 100%;
         background-color: #f5f3f6;
+    }
+
+    .wechat-tip {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #FFFFFF;
+
+        span {
+            font-size: 4rem;
+        }
     }
 </style>

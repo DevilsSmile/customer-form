@@ -18,7 +18,6 @@ export default new Vuex.Store({
             state.isSignIn = value
         },
         signInUser: function (state, value) {
-            console.log(value)
             state.signInUser = value
         },
     },

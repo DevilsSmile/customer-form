@@ -12,9 +12,13 @@ Vue.use(Router)
 export default new Router({
     mode : 'history',
     routes: [
-        { path: '/', name: 'home', component: () => import('@/view/home.vue') },
-        { path: '/questionnaireinput', name: 'questionnaire-input', component: () => import('@/view/questionnaire-input.vue') },
-        { path: '/questionnairedisplay', name: 'questionnaire-display', component: () => import('@/view/questionnaire-display.vue') },
+        { path: '/apppage/', name: 'home', component: () => import('@/view/home.vue') },
+        { path: '/apppage/signin', name: 'signin', component: () => import('@/view/sign-in.vue') },
+        { path: '/apppage/resetpassword', name: 'resetpassword', component: () => import('@/view/reset-password.vue') },
+        { path: '/apppage/editinformation', name: 'editinformation', component: () => import('@/view/edit-information.vue') },
+        { path: '/apppage/questionnaireinput', name: 'questionnaire-input', component: () => import('@/view/questionnaire-input.vue') },
+        { path: '/apppage/questionnairedisplay', name: 'questionnaire-display', component: () => import('@/view/questionnaire-display.vue') },
+        { path: '/apppage/questionnairepreview', name: 'questionnaire-preview', component: () => import('@/view/questionnaire-preview.vue') },
         // { path: '/signIn', component: () => import('@/view/sign-in.vue'),
         //     children: [
         //         { path: '/', name: 'signInStatus', mapText: '登录身份', component: () => import('@/view/sign-in-status.vue') },
