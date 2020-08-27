@@ -92,6 +92,7 @@
                 return
             }
 
+            console.log('home', this.signInUser)
             this.queryQuestionnaire()
         },
         methods: {

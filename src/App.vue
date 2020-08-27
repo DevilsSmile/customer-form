@@ -47,10 +47,35 @@
             window.onresize = () => {
                 this.phoneAdaptation()
             }
+
+            this.isSignIn()
             this.phoneAdaptation()
         },
 
         methods: {
+            isSignIn: function () {
+                let funcSignInRecord = Number(localStorage.getItem('signinRecord'))
+                let funcNow = new Date().getTime()
+
+                if (!funcSignInRecord) {
+                    this.signOut()
+                    return
+                }
+
+                // 间隔时间小于 20 分钟
+                if (funcNow - funcSignInRecord < 10800000) {
+                    this.$store.commit('signInUser', JSON.parse(localStorage.getItem('signInUser')))
+                    this.$store.commit('isSignIn', true)
+                } else {
+                    this.signOut()
+                }
+            },
+
+            signOut: function () {
+                this.$store.commit('signInUser', '')
+                this.$store.commit('isSignIn', false)
+                localStorage.clear()
+            },
             phoneAdaptation: function () {
                 let funcHtml = document.getElementsByTagName('html')[0]
                 let funcWindowWidth = window.innerWidth

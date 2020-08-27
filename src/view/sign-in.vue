@@ -120,6 +120,10 @@
 
                                     this.formCompanyInfo.file.push(funcImage)
                                 }
+                                // 缓存登录信息
+                                localStorage.setItem('signInUser', JSON.stringify(this.formCompanyInfo))
+                                localStorage.setItem('signinRecord', new Date().getTime())
+
                                 this.formCompanyInfoBuffer = JSON.parse(JSON.stringify(this.formCompanyInfo))
                                 this.$store.commit('signInUser', JSON.parse(JSON.stringify(this.formCompanyInfo)))
                                 this.$store.commit('isSignIn', true)
