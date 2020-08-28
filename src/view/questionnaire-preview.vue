@@ -179,9 +179,10 @@
 
         created: function () {
             if (this.$route.query.preview === 'true') {
-                this.isPreview = false
-            } else {
+                console.log('preview')
                 this.isPreview = true
+            } else {
+                this.isPreview = false
             }
             if (this.$route.query.formId) {
                 this.queryForm()
